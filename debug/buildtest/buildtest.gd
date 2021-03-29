@@ -45,35 +45,35 @@ func _ready() -> void:
     core.name = "Core"
     core_body = core
     
-    #var chip1 := CHIP.instance()
-    #chip1.name = "Chip 1"
-    #chip1.transform.origin = Vector3(0, 0, -1) * Constants.CHIP_SIZE
-    #core.add_child(chip1)
+    var chip1 := CHIP.instance()
+    chip1.name = "Chip 1"
+    chip1.transform.origin = Vector3(0, 0, -1) * Constants.CHIP_SIZE
+    core.add_child(chip1)
     
-    #var joint1 := make_joint(chip1, core, JointType.CHIP)
-    #joint1.transform.origin = Vector3(0, 0, 1) * Constants.CHIP_HALF_SIZE
-    #joint_placeholders.append(joint1)
-    #chip1.add_child(joint1)
+    var joint1 := make_joint(chip1, core, JointType.CHIP)
+    joint1.transform.origin = Vector3(0, 0, 1) * Constants.CHIP_HALF_SIZE
+    joint_placeholders.append(joint1)
+    chip1.add_child(joint1)
     
     var rudder1 := RUDDER.instance()
     rudder1.name = "Rudder 1"
     rudder1.transform.origin = Vector3(0, 0, -1) * Constants.CHIP_SIZE
-    core.add_child(rudder1)
+    chip1.add_child(rudder1)
     
-    var joint2 := make_joint(rudder1, core, JointType.RUDDER)
+    var joint2 := make_joint(rudder1, chip1, JointType.RUDDER)
     joint2.transform.origin = Vector3(0, 0, 1) * Constants.CHIP_HALF_SIZE
     joint_placeholders.append(joint2)
     rudder1.add_child(joint2)
     
-    #var trim1 := TRIM.instance()
-    #trim1.name = "Trim 1"
-    #trim1.transform.origin = Vector3(0, 0, -1) * Constants.CHIP_SIZE
-    #rudder1.add_child(trim1)
+    var trim1 := TRIM.instance()
+    trim1.name = "Trim 1"
+    trim1.transform.origin = Vector3(0, 0, -1) * Constants.CHIP_SIZE
+    rudder1.add_child(trim1)
     
-    #var joint3 := make_joint(trim1, rudder1, JointType.TRIM)
-    #joint3.transform.origin = Vector3(0, 0, 1) * Constants.CHIP_HALF_SIZE
-    #joint_placeholders.append(joint3)
-    #trim1.add_child(joint3)
+    var joint3 := make_joint(trim1, rudder1, JointType.TRIM)
+    joint3.transform.origin = Vector3(0, 0, 1) * Constants.CHIP_HALF_SIZE
+    joint_placeholders.append(joint3)
+    trim1.add_child(joint3)
     
     # we have to temporarily add the model to the scene so that godot calculates
     # all the node positions. this node is removed again in the call to
@@ -123,15 +123,15 @@ func create_joints(chips: Node, joint_placeholders: Array) -> void:
         chips.add_child(joint)
         
 func create_joint_from_placeholder(joint_placeholder: JointPlaceholder) -> Joint:
-    var joint := Generic6DOFJoint.new()
+    var joint := HingeJoint.new()
     joint.name = joint_placeholder.name
     joint.set_node_a(joint_placeholder.node_a)
     joint.set_node_b(joint_placeholder.node_b)
     joint.transform = joint_placeholder.transform
     
     match joint_placeholder.type:
-        JointType.CHIP: joint.set_flag_x(Generic6DOFJoint.FLAG_ENABLE_ANGULAR_LIMIT, false)
-        JointType.RUDDER: joint.set_flag_y(Generic6DOFJoint.FLAG_ENABLE_ANGULAR_LIMIT, false)
-        JointType.TRIM: joint.set_flag_z(Generic6DOFJoint.FLAG_ENABLE_ANGULAR_LIMIT, false)
+        JointType.CHIP: joint.rotate(Vector3.UP, TAU / 4)
+        JointType.RUDDER: joint.rotate(Vector3.RIGHT, TAU / 4)
+        JointType.TRIM: pass
         
     return joint
