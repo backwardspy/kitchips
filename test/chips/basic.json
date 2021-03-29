@@ -1,0 +1,109 @@
+{
+    "meta": {
+        "name": "Basic",
+        "author": "backwardspy"
+    },
+    "vars": [
+        {
+            "name": "engine",
+            "default": 0,
+            "min": -15,
+            "max": 50,
+            "step": 10,
+            "gravity": 50,
+            "+key": "up",
+            "-key": "down"
+        }, {
+            "name": "handle",
+            "default": 0,
+            "min": -15,
+            "max": 15,
+            "step": 10,
+            "gravity": 50,
+            "+key": "left",
+            "-key": "right"
+        }
+    ],
+    "body": {
+        "type": "core",
+        "children": [
+            {
+                "type": "chip",
+                "attached": "-z",
+                "angle": 0,
+                "children": [
+                    {
+                        "type": "rudder",
+                        "attached": "-z",
+                        "angle": "handle",
+                        "children": [
+                            {
+                                "type": "frame",
+                                "attached": "-x",
+                                "angle": 0,
+                                "children": [
+                                    {
+                                        "type": "wheel",
+                                        "attached": "-x",
+                                        "angle": -90,
+                                        "power": "-engine",
+                                        "children": []
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "frame",
+                                "attached": "+x",
+                                "angle": 0,
+                                "children": [
+                                    {
+                                        "type": "wheel",
+                                        "attached": "+x",
+                                        "angle": -90,
+                                        "power": "engine",
+                                        "children": []
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "type": "chip",
+                "attached": "+z",
+                "angle": 0,
+                "children": [
+                    {
+                        "type": "frame",
+                        "attached": "-x",
+                        "angle": 0,
+                        "children": [
+                            {
+                                "type": "wheel",
+                                "attached": "-x",
+                                "angle": -90,
+                                "power": "-engine",
+                                "children": []
+                            }
+                        ]
+                    },
+                    {
+                        "type": "frame",
+                        "attached": "+x",
+                        "angle": 0,
+                        "children": [
+                            {
+                                "type": "wheel",
+                                "attached": "+x",
+                                "angle": -90,
+                                "power": "engine",
+                                "children": []
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+}

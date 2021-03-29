@@ -1,0 +1,46 @@
+; Engine configuration file.
+; It's best edited using the editor UI and not directly,
+; since the parameters that go here are not all obvious.
+;
+; Format:
+;   [section] ; section goes between []
+;   param=value ; assign values to parameters
+
+config_version=4
+
+_global_script_classes=[ {
+"base": "Object",
+"class": "ChipLoader",
+"language": "GDScript",
+"path": "res://chips/scripts/ChipLoader.gd"
+}, {
+"base": "Object",
+"class": "Constants",
+"language": "GDScript",
+"path": "res://world/Constants.gd"
+}, {
+"base": "Object",
+"class": "Craft",
+"language": "GDScript",
+"path": "res://chips/scripts/Craft.gd"
+} ]
+_global_script_class_icons={
+"ChipLoader": "",
+"Constants": "",
+"Craft": ""
+}
+
+[application]
+
+config/name="KitChips"
+run/main_scene="res://World.tscn"
+config/icon="res://icon.png"
+
+[autoload]
+
+CraftController="*res://chips/scripts/CraftController.gd"
+
+[rendering]
+
+quality/filters/msaa=3
+environment/default_environment="res://default_env.tres"
