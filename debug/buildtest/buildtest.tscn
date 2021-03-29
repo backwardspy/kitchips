@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=2]
+[gd_scene load_steps=11 format=2]
 
 [ext_resource path="res://debug/buildtest/buildtest.gd" type="Script" id=1]
 [ext_resource path="res://terrain/textures/ground013/Ground013_1K_Normal.jpg" type="Texture" id=2]
@@ -26,20 +26,10 @@ ao_on_uv2 = false
 ao_texture_channel = 0
 uv1_scale = Vector3( 250, 250, 250 )
 
-[sub_resource type="SpatialMaterial" id=8]
+[sub_resource type="SpatialMaterial" id=4]
 flags_unshaded = true
 flags_no_depth_test = true
 vertex_color_use_as_albedo = true
-
-[sub_resource type="BoxShape" id=4]
-
-[sub_resource type="CubeMesh" id=5]
-
-[sub_resource type="BoxShape" id=6]
-extents = Vector3( 1, 0.1, 1 )
-
-[sub_resource type="CubeMesh" id=7]
-size = Vector3( 2, 0.2, 2 )
 
 [node name="Scene" type="Spatial"]
 script = ExtResource( 1 )
@@ -58,66 +48,7 @@ mesh = SubResource( 2 )
 material/0 = SubResource( 3 )
 
 [node name="JointVisualiser" type="ImmediateGeometry" parent="."]
-material_override = SubResource( 8 )
+visible = false
+material_override = SubResource( 4 )
 cast_shadow = 0
 script = ExtResource( 6 )
-
-[node name="TestRig" type="Node" parent="."]
-
-[node name="StaticBody" type="StaticBody" parent="TestRig"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.36298, -4.10233 )
-
-[node name="CollisionShape" type="CollisionShape" parent="TestRig/StaticBody"]
-shape = SubResource( 4 )
-
-[node name="MeshInstance" type="MeshInstance" parent="TestRig/StaticBody"]
-mesh = SubResource( 5 )
-material/0 = null
-
-[node name="RigidBody" type="RigidBody" parent="TestRig"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.45908, -2.08317 )
-
-[node name="CollisionShape" type="CollisionShape" parent="TestRig/RigidBody"]
-shape = SubResource( 6 )
-
-[node name="MeshInstance" type="MeshInstance" parent="TestRig/RigidBody"]
-mesh = SubResource( 7 )
-material/0 = null
-
-[node name="RigidBody2" type="RigidBody" parent="TestRig"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.45908, -0.0454311 )
-
-[node name="CollisionShape" type="CollisionShape" parent="TestRig/RigidBody2"]
-shape = SubResource( 6 )
-
-[node name="MeshInstance" type="MeshInstance" parent="TestRig/RigidBody2"]
-mesh = SubResource( 7 )
-material/0 = null
-
-[node name="RigidBody3" type="RigidBody" parent="TestRig"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.45908, 2.01746 )
-
-[node name="CollisionShape" type="CollisionShape" parent="TestRig/RigidBody3"]
-shape = SubResource( 6 )
-
-[node name="MeshInstance" type="MeshInstance" parent="TestRig/RigidBody3"]
-mesh = SubResource( 7 )
-material/0 = null
-
-[node name="Generic6DOFJoint" type="Generic6DOFJoint" parent="TestRig"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.47116, -3.09279 )
-nodes/node_a = NodePath("../RigidBody")
-nodes/node_b = NodePath("../StaticBody")
-angular_limit_x/enabled = false
-
-[node name="Generic6DOFJoint2" type="Generic6DOFJoint" parent="TestRig"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.47116, -1.05932 )
-nodes/node_a = NodePath("../RigidBody2")
-nodes/node_b = NodePath("../RigidBody")
-angular_limit_x/enabled = false
-
-[node name="Generic6DOFJoint3" type="Generic6DOFJoint" parent="TestRig"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.47116, 0.986741 )
-nodes/node_a = NodePath("../RigidBody3")
-nodes/node_b = NodePath("../RigidBody2")
-angular_limit_x/enabled = false

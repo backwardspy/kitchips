@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/rudder.png-7d7c6bd49f34470d6c49d18968519d75.stex"
+path="res://.import/rudder.png-4391b7fb6ae53fc42e5d090ce15d914d.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://chips/textures/rudder.png"
-dest_files=[ "res://.import/rudder.png-7d7c6bd49f34470d6c49d18968519d75.stex" ]
+source_file="res://assets/textures/rudder.png"
+dest_files=[ "res://.import/rudder.png-4391b7fb6ae53fc42e5d090ce15d914d.stex" ]
 
 [params]
 

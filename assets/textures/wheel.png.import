@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/wheel.png-b5f9a980148011cc789ea464e128b208.stex"
+path="res://.import/wheel.png-0de43e818af75eb0bc7b6708106c680c.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://chips/textures/wheel.png"
-dest_files=[ "res://.import/wheel.png-b5f9a980148011cc789ea464e128b208.stex" ]
+source_file="res://assets/textures/wheel.png"
+dest_files=[ "res://.import/wheel.png-0de43e818af75eb0bc7b6708106c680c.stex" ]
 
 [params]
 
