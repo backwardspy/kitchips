@@ -1,0 +1,76 @@
+[gd_scene load_steps=11 format=2]
+
+[ext_resource path="res://world/WorldLoader.gd" type="Script" id=1]
+[ext_resource path="res://debug/DebugDude.gd" type="Script" id=2]
+[ext_resource path="res://terrain/textures/ground013/Ground013_1K_Color.jpg" type="Texture" id=3]
+[ext_resource path="res://terrain/textures/ground013/Ground013_1K_AmbientOcclusion.jpg" type="Texture" id=4]
+[ext_resource path="res://terrain/textures/ground013/Ground013_1K_Normal.jpg" type="Texture" id=5]
+[ext_resource path="res://terrain/textures/ground013/Ground013_1K_Roughness.jpg" type="Texture" id=6]
+[ext_resource path="res://camera/FollowCamera.gd" type="Script" id=7]
+
+[sub_resource type="BoxShape" id=1]
+extents = Vector3( 250, 1, 250 )
+
+[sub_resource type="CubeMesh" id=2]
+size = Vector3( 500, 2, 500 )
+
+[sub_resource type="SpatialMaterial" id=3]
+albedo_texture = ExtResource( 3 )
+roughness_texture = ExtResource( 6 )
+normal_enabled = true
+normal_scale = 1.0
+normal_texture = ExtResource( 5 )
+ao_enabled = true
+ao_light_affect = 0.0
+ao_texture = ExtResource( 4 )
+ao_on_uv2 = false
+ao_texture_channel = 0
+uv1_scale = Vector3( 250, 250, 250 )
+
+[node name="World" type="Spatial"]
+
+[node name="WorldLoader" type="Node" parent="."]
+script = ExtResource( 1 )
+
+[node name="DebugDude" type="Node" parent="."]
+script = ExtResource( 2 )
+
+[node name="UI" type="CanvasLayer" parent="DebugDude"]
+
+[node name="CraftVars" type="Label" parent="DebugDude/UI"]
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = -72.1758
+margin_top = -24.1758
+margin_right = -8.17578
+margin_bottom = -8.17578
+grow_horizontal = 0
+grow_vertical = 0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Camera" type="Camera" parent="."]
+transform = Transform( 0.944925, -0.0695627, 0.319807, 0, 0.977151, 0.212545, -0.327285, -0.200839, 0.923336, 4.1655, 4.15211, 9.75323 )
+current = true
+script = ExtResource( 7 )
+
+[node name="SpawnPoint" type="Position3D" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5, 0 )
+
+[node name="Terrain" type="StaticBody" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -4.584, 0 )
+
+[node name="CollisionShape" type="CollisionShape" parent="Terrain"]
+shape = SubResource( 1 )
+
+[node name="MeshInstance" type="MeshInstance" parent="Terrain"]
+mesh = SubResource( 2 )
+material/0 = SubResource( 3 )
+
+[node name="Sun" type="DirectionalLight" parent="."]
+transform = Transform( 0.791735, 0.418692, -0.444806, -0.182217, 0.856881, 0.482237, 0.583055, -0.300752, 0.754715, 0, 5.06247, 0 )
+light_color = Color( 1, 0.980392, 0.913725, 1 )
+shadow_enabled = true
