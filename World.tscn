@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=2]
+[gd_scene load_steps=13 format=2]
 
 [ext_resource path="res://world/WorldLoader.gd" type="Script" id=1]
 [ext_resource path="res://debug/DebugDude.gd" type="Script" id=2]
@@ -7,6 +7,13 @@
 [ext_resource path="res://terrain/textures/ground013/Ground013_1K_Normal.jpg" type="Texture" id=5]
 [ext_resource path="res://terrain/textures/ground013/Ground013_1K_Roughness.jpg" type="Texture" id=6]
 [ext_resource path="res://camera/FollowCamera.gd" type="Script" id=7]
+[ext_resource path="res://debug/JointVisualiser.gd" type="Script" id=8]
+
+[sub_resource type="SpatialMaterial" id=4]
+flags_unshaded = true
+flags_no_depth_test = true
+flags_do_not_receive_shadows = true
+vertex_color_use_as_albedo = true
 
 [sub_resource type="BoxShape" id=1]
 extents = Vector3( 250, 1, 250 )
@@ -51,6 +58,11 @@ grow_vertical = 0
 __meta__ = {
 "_edit_use_anchors_": false
 }
+
+[node name="JointVisualiser" type="ImmediateGeometry" parent="."]
+visible = false
+material_override = SubResource( 4 )
+script = ExtResource( 8 )
 
 [node name="Camera" type="Camera" parent="."]
 transform = Transform( 0.944925, -0.0695627, 0.319807, 0, 0.977151, 0.212545, -0.327285, -0.200839, 0.923336, 4.1655, 4.15211, 9.75323 )

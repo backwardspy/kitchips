@@ -6,8 +6,8 @@ class Motor:
     var joint: Generic6DOFJoint
     var reversed: bool
     
-class Rudder:
-    var joint: Generic6DOFJoint
+class Hinge:
+    var joint: HingeJoint
     var reversed: bool
 
 class Var:
@@ -23,7 +23,7 @@ class Var:
     var current_value: float
     
     var motors: Array
-    var rudders: Array
+    var hinges: Array
     
 var name: String
 var author: String
@@ -44,12 +44,12 @@ func add_motor(var_name: String, joint: Generic6DOFJoint, reverse: bool):
     motor.reversed = reverse
     v.motors.append(motor)
     
-func add_rudder(var_name: String, joint: Generic6DOFJoint, reverse: bool):
+func add_hinge(var_name: String, joint: HingeJoint, reverse: bool):
     var v: Var = _name_to_var[var_name]
-    var rudder := Rudder.new()
-    rudder.joint = joint
-    rudder.reversed = reverse
-    v.rudders.append(rudder)
+    var hinge := Hinge.new()
+    hinge.joint = joint
+    hinge.reversed = reverse
+    v.hinges.append(hinge)
 
 func vars() -> Array:
     return _vars

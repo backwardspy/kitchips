@@ -4,37 +4,78 @@ const Craft = preload("res://chips/scripts/Craft.gd")
 
 class_name ChipLoader
 
-# maps chip "type" fields to physical models
-var chip_scenes := {
-    "core": preload("res://chips/Core.tscn"),
-    "chip": preload("res://chips/Chip.tscn"),
-    "wheel": preload("res://chips/Wheel.tscn"),
-    "frame": preload("res://chips/Frame.tscn"),
-    "rudder": preload("res://chips/Rudder.tscn"),
+enum ChipType {
+    CORE,
+    CHIP,
+    FRAME,
+    RUDDER,
+    TRIM,
+    WHEEL_HUB,
 }
 
-var attachment_offsets := {
-    "+x": Vector3.RIGHT * Constants.CHIP_SIZE,
-    "-x": Vector3.LEFT * Constants.CHIP_SIZE,
-    "+z": Vector3.BACK * Constants.CHIP_SIZE,
-    "-z": Vector3.FORWARD * Constants.CHIP_SIZE,
+var CHIP_TYPE_NAMES := {
+    ChipType.CORE: "Core",
+    ChipType.CHIP: "Chip",
+    ChipType.FRAME: "Frame",
+    ChipType.RUDDER: "Rudder",
+    ChipType.TRIM: "Trim",
+    ChipType.WHEEL_HUB: "Wheel Hub",
 }
 
-var attachment_pivots := {
-    "+x": Vector3.RIGHT * Constants.CHIP_HALF_SIZE,
-    "-x": Vector3.LEFT * Constants.CHIP_HALF_SIZE,
-    "+z": Vector3.BACK * Constants.CHIP_HALF_SIZE,
-    "-z": Vector3.FORWARD * Constants.CHIP_HALF_SIZE,
+var CHIP_SCENES := {
+    ChipType.CHIP: preload("res://chips/Chip.tscn"),
+    ChipType.CORE: preload("res://chips/Core.tscn"),
+    ChipType.FRAME: preload("res://chips/Frame.tscn"),
+    ChipType.RUDDER: preload("res://chips/Rudder.tscn"),
+    ChipType.TRIM: preload("res://chips/Trim.tscn"),
+    ChipType.WHEEL_HUB: preload("res://chips/WheelHub.tscn"),
+}
+const WHEEL_SCENE := preload("res://chips/Wheel.tscn")
+
+enum JointType {
+    CHIP,
+    RUDDER,
+    TRIM,
+    WHEEL,
 }
 
-var attachment_axes := {
-    "+x": Vector3.BACK,
-    "-x": Vector3.FORWARD,
-    "+z": Vector3.LEFT,
-    "-z": Vector3.RIGHT,
+var JOINT_TYPE_TAGS := {
+    JointType.CHIP: "CHP",
+    JointType.RUDDER: "RDR",
+    JointType.TRIM: "TRM",
+    JointType.WHEEL: "WHL",
 }
 
-var scancodes := {
+enum Attachment {
+    NEG_Z,
+    POS_Z,
+    NEG_X,
+    POS_X,
+}
+
+var CHIP_TYPE_JOINTS := {
+    ChipType.CHIP: JointType.CHIP,
+    ChipType.FRAME: JointType.CHIP,
+    ChipType.RUDDER: JointType.RUDDER,
+    ChipType.TRIM: JointType.TRIM,
+    ChipType.WHEEL_HUB: JointType.CHIP,
+}
+
+var JOINT_TYPE_AXES := {
+    JointType.CHIP: Vector3.RIGHT,
+    JointType.RUDDER: Vector3.UP,
+    JointType.TRIM: Vector3.FORWARD,
+}
+
+# always around local Y axis
+var ATTACH_ROTATION := {
+    Attachment.NEG_Z: 0,
+    Attachment.POS_Z: TAU / 2,
+    Attachment.NEG_X: -TAU / 4,
+    Attachment.POS_X: TAU / 4,
+}
+
+var SCANCODES := {
     "up": KEY_UP,
     "down": KEY_DOWN,
     "left": KEY_LEFT,
@@ -53,7 +94,64 @@ var scancodes := {
     "v": KEY_V,
 }
 
-func _json_from_file(file_path: String) -> JSONParseResult:
+var CHIP_TYPE_STRING_TO_TYPE := {
+    "core": ChipType.CORE,
+    "chip": ChipType.CHIP,
+    "frame": ChipType.FRAME,
+    "rudder": ChipType.RUDDER,
+    "trim": ChipType.TRIM,
+    "wheel": ChipType.WHEEL_HUB,
+}
+
+var ATTACHMENT_STRING_TO_ATTACHMENT := {
+    "+x": Attachment.POS_X,
+    "-x": Attachment.NEG_X,
+    "+z": Attachment.POS_Z,
+    "-z": Attachment.NEG_Z,
+}
+
+enum VarConversion {
+    NONE,
+    DEG2RAD,
+}
+
+class VarConfig:
+    var from_var: bool
+    var constant_value: float
+    var var_name: String
+    var reverse: bool
+    
+    func _init(value, conversion: int = VarConversion.NONE):
+        if value is String:
+            from_var = true
+            constant_value = 0
+            if value[0] == "+":
+                value.erase(0, 1)
+            elif value[0] == "-":
+                value.erase(0, 1)
+                reverse = true
+            var_name = value
+        elif value is float:
+            from_var = false
+            constant_value = convert_value(value, conversion)
+            var_name = ""
+            reverse = false
+        else:
+            push_error("invalid value type in VarConfig::_init(): %s" % value.get_class())
+            
+    func convert_value(value: float, conversion: int) -> float:
+        match conversion:
+            VarConversion.DEG2RAD: return deg2rad(value)
+            _: return value
+
+class JointPlaceholder extends Spatial:
+    var node_a: String
+    var node_b: String
+    var type: int   # a JointType value
+    var angle_var: VarConfig
+    var power_var: VarConfig
+
+func json_from_file(file_path: String) -> JSONParseResult:
     var file := File.new()
     if file.open(file_path, File.READ) != OK:
         var error_string := "failed to open file: %s"
@@ -63,8 +161,8 @@ func _json_from_file(file_path: String) -> JSONParseResult:
     file.close()
     return JSON.parse(content)
 
-func load_chips(file_path: String) -> Craft:
-    var json := _json_from_file(file_path)
+func load_chips(file_path: String, temp_container: Node) -> Craft:
+    var json := json_from_file(file_path)
     
     if not json:
         return null
@@ -79,42 +177,21 @@ func load_chips(file_path: String) -> Craft:
         push_error(error_string % file_path)
         return null
         
-    return _parse_chips(json.result)
+    return parse_chips(json.result, temp_container)
 
-func _parse_chips(chips: Dictionary) -> Craft:
+func parse_chips(chips: Dictionary, temp_container: Node) -> Craft:
     var craft = Craft.new()
-    _parse_meta(craft, chips)
-    _parse_vars(craft, chips)
-    _parse_body(craft, chips)
+    parse_meta(craft, chips)
+    parse_vars(craft, chips)
+    parse_body(craft, chips, temp_container)
     return craft
-    
-func _parse_body(craft: Craft, chips: Dictionary):
-    var root_chip: Dictionary = chips["body"]
-    if root_chip["type"] != "core":
-        var error_string := 'expected root chip to be of type "core", instead got "%s"'
-        push_error(error_string % root_chip["type"])
-        return null
-        
-    craft.node = Node.new()
-    craft.node.name = "PlayerChips"
-    
-    var core_body := RigidBody.new()
-    core_body.name = "CoreBody"
-    craft.core_body = core_body
-    craft.node.add_child(core_body)
-    
-    var core := _make_shape(root_chip["type"])
-    core_body.add_child(core)
-    
-    for child in root_chip["children"]:
-        _add_chip_to_body(craft, core_body, core, child)
 
-func _parse_meta(craft: Craft, chips: Dictionary):
+func parse_meta(craft: Craft, chips: Dictionary):
     var meta: Dictionary = chips["meta"]
     craft.name = meta["name"]
     craft.author = meta["author"]
 
-func _parse_vars(craft: Craft, chips: Dictionary):
+func parse_vars(craft: Craft, chips: Dictionary):
     var vars: Array = chips["vars"]
     for var_conf in vars:
         var v = Craft.Var.new()
@@ -124,114 +201,216 @@ func _parse_vars(craft: Craft, chips: Dictionary):
         v.maximum = var_conf["max"]
         v.step = var_conf["step"]
         v.gravity = var_conf["gravity"]
-        v.positive_key = scancodes[var_conf["+key"]]
-        v.negative_key = scancodes[var_conf["-key"]]
-
+        v.positive_key = SCANCODES[var_conf["+key"]]
+        v.negative_key = SCANCODES[var_conf["-key"]]
+        
         craft.add_var(v)
 
-func _add_chip_to_body(craft: Craft, body: RigidBody, parent: CollisionShape, chip: Dictionary):
-    var type: String = chip["type"]
-    var attachment: String = chip["attached"].to_lower()
-    var angle: float = 0
-    if chip["angle"] is float:
-        angle = deg2rad(chip["angle"])
-    var children: Array = chip["children"]
+func parse_body(craft: Craft, chips: Dictionary, temp_container: Node):
+    var root_chip: Dictionary = chips["body"]
+    if root_chip["type"] != "core":
+        var error_string := 'expected root chip to be of type "core", instead got "%s"'
+        push_error(error_string % root_chip["type"])
+        return null
+
+    # we keep track of joint placeholders for easy replacement later
+    var joint_placeholders := []
+        
+    craft.node = Node.new()
+    craft.node.name = "Player Craft"
+
+    craft.core_body = make_core()
+    var id := 0
+    for child in root_chip["children"]:
+        id = attach_chip_tree(craft.core_body, child, joint_placeholders, id)
+
+    # make godot calculate everybody's global transforms
+    temp_container.add_child(craft.core_body)
+
+    # scatter the model tree into the chips container
+    # this is done to leverage godot's calculation of transforms so we can work
+    # in local space before putting the model together at the end.
+    flatten_craft_tree(craft.core_body, craft.node)
     
-    var working_body := body
-    
-    match type:
-        "wheel": working_body = attach_wheel(craft, chip, working_body, parent, attachment, angle)
-        "rudder": working_body = attach_rudder(craft, chip, working_body, parent, attachment, angle)
-    
-    var shape := _make_shape(type)
-    # we only need to shift the shape if it's an extension of an existing body
-    if working_body == body:
-        shape.transform = _calculate_chip_transform(shape.transform, parent, attachment, angle)
-    
-    working_body.add_child(shape)
-    
-    for child in children:
-        _add_chip_to_body(craft, working_body, shape, child)
-    
-func _calculate_chip_transform(original: Transform, parent: CollisionShape, attachment: String, angle: float) -> Transform:
-    var axis: Vector3 = attachment_axes[attachment]
-    var pivot: Vector3 = attachment_pivots[attachment]
-    var transform := original
-    transform = transform.translated(parent.transform.origin + attachment_offsets[attachment] - pivot)
-    transform.basis = transform.basis.rotated(axis, angle)
-    transform = transform.translated(pivot)
-    return transform
-    
-func _make_shape(type: String) -> CollisionShape:
-    var scene: PackedScene = chip_scenes[type]
-    var body: CollisionShape = scene.instance()
-    body.name = type
-    return body
-    
-func attach_wheel(
-    craft: Craft,
-    chip: Dictionary,
+    # replace joint placeholders with actual joints
+    create_joints(craft, joint_placeholders)
+
+    return craft
+
+func attach_chip_tree(
     parent_body: RigidBody,
-    parent_shape: CollisionShape,
-    attachment: String,
-    angle: float
-) -> RigidBody:
-    var wheel_body := RigidBody.new()
-    wheel_body.name = "wheel"
-    wheel_body.transform = _calculate_chip_transform(wheel_body.transform, parent_shape, attachment, angle)
-    craft.node.add_child(wheel_body)
+    child_config: Dictionary,
+    joint_placeholders: Array,
+    id: int
+) -> int:
+    var chip_type: int = CHIP_TYPE_STRING_TO_TYPE[child_config["type"]]
+    var attachment: int = ATTACHMENT_STRING_TO_ATTACHMENT[child_config["attached"]]
     
+    var angle_var := VarConfig.new(child_config["angle"], VarConversion.DEG2RAD)
+    var power_var := VarConfig.new(child_config.get("power", 0.0))
+
+    var body := attach(
+        chip_type,
+        parent_body,
+        attachment,
+        angle_var,
+        power_var,
+        id,
+        joint_placeholders
+    )
+    id += 1
+
+    for child in child_config["children"]:
+        id = attach_chip_tree(body, child, joint_placeholders, id)
+        
+    return id
+
+func make_core() -> RigidBody:
+    var core: RigidBody = CHIP_SCENES[ChipType.CORE].instance()
+    core.name = "Core"
+    return core
+
+func attach(
+    chip_type: int,
+    parent: RigidBody,
+    attachment: int,
+    angle_var: VarConfig,
+    power_var: VarConfig,
+    id: int,
+    joint_placeholders: Array
+) -> RigidBody:
+    var chip: RigidBody = CHIP_SCENES[chip_type].instance()
+    chip.name = "%s %d" % [CHIP_TYPE_NAMES[chip_type], id]
+    var joint_type: int = CHIP_TYPE_JOINTS[chip_type]
+    
+    # point chip in correct direction
+    chip.rotate(chip.transform.basis.y, ATTACH_ROTATION[attachment])
+    chip.translate(Vector3(0, 0, -Constants.CHIP_HALF_SIZE))
+    chip.rotate(JOINT_TYPE_AXES[joint_type], angle_var.constant_value)
+    chip.translate(Vector3(0, 0, -Constants.CHIP_HALF_SIZE))
+    
+    parent.add_child(chip)
+    
+    var joint := make_joint(
+        chip,
+        parent,
+        joint_type,
+        angle_var,
+        power_var
+    )
+    joint.transform = chip.transform
+    joint.translate(Vector3(0, 0, Constants.CHIP_HALF_SIZE))
+    parent.add_child(joint)
+    joint_placeholders.append(joint)
+    
+    match chip_type:
+        ChipType.WHEEL_HUB: attach_wheel_to_hub(chip, power_var, joint_placeholders)
+    
+    return chip
+    
+func make_joint(
+    from: RigidBody,
+    to: RigidBody,
+    joint_type: int,
+    angle_var: VarConfig,
+    power_var: VarConfig
+) -> JointPlaceholder:
+    var joint := JointPlaceholder.new()
+    joint.name = "[%s] %s -> %s" % [JOINT_TYPE_TAGS[joint_type], from.name, to.name]
+    joint.node_a = "../%s" % from.name
+    joint.node_b = "../%s" % to.name
+    joint.type = joint_type
+    joint.angle_var = angle_var
+    joint.power_var = power_var
+    return joint
+    
+func attach_wheel_to_hub(hub: RigidBody, power_var: VarConfig, joint_placeholders: Array) -> void:
+    var wheel := WHEEL_SCENE.instance()
+    wheel.name = "Wheel on %s" % hub.name
+    hub.add_child(wheel)
+    
+    var joint := make_joint(wheel, hub, JointType.WHEEL, null, power_var)
+    wheel.add_child(joint)
+    
+    joint_placeholders.append(joint)
+    
+# recursively visits all rigidbodies & joints in the tree and reparents them.
+func flatten_craft_tree(body: Spatial, container: Node) -> void:
+    for child in body.get_children():
+        if child is RigidBody or child is JointPlaceholder:
+            flatten_craft_tree(child, container)
+            
+    # reparent body, preserving transform
+    var transform := body.global_transform
+    body.get_parent().remove_child(body)
+    container.add_child(body)
+    body.global_transform = transform
+
+func create_joints(craft: Craft, joint_placeholders: Array) -> void:
+    for joint_placeholder in joint_placeholders:
+        var joint := create_joint_from_placeholder(craft, joint_placeholder)
+        craft.node.remove_child(joint_placeholder)
+        craft.node.add_child(joint)
+        
+func create_joint_from_placeholder(craft: Craft, joint_placeholder: JointPlaceholder) -> Joint:
+    match joint_placeholder.type:
+        JointType.CHIP, JointType.RUDDER, JointType.TRIM:
+            return create_hinge_joint(craft, joint_placeholder)
+        JointType.WHEEL:
+            return create_wheel_joint(craft, joint_placeholder)
+        _:
+            return null
+
+func create_hinge_joint(craft: Craft, joint_placeholder: JointPlaceholder) -> Joint:
+    var joint := HingeJoint.new()
+    joint.name = joint_placeholder.name
+    joint.set_node_a(joint_placeholder.node_a)
+    joint.set_node_b(joint_placeholder.node_b)
+    joint.transform = joint_placeholder.transform
+    
+    match joint_placeholder.type:
+        JointType.CHIP: joint.rotate(joint.transform.basis.y, TAU / 4)
+        JointType.RUDDER: joint.rotate(joint.transform.basis.x, TAU / 4)
+        JointType.TRIM: pass
+        
+    joint.set_param(HingeJoint.PARAM_LIMIT_LOWER, 0)
+    joint.set_param(HingeJoint.PARAM_LIMIT_UPPER, 0)
+    joint.set_flag(HingeJoint.FLAG_USE_LIMIT, true)
+    
+    if joint_placeholder.angle_var.from_var:
+        craft.add_hinge(
+            joint_placeholder.angle_var.var_name,
+            joint,
+            joint_placeholder.angle_var.reverse
+        )
+        
+    return joint
+    
+func create_wheel_joint(craft: Craft, joint_placeholder: JointPlaceholder) -> Joint:
     var joint := Generic6DOFJoint.new()
-    joint.name = "Axle: %s -> %s" % [wheel_body.name, parent_body.name]
-    joint.transform = _calculate_chip_transform(joint.transform, parent_shape, attachment, angle)
-    joint.transform.basis = joint.transform.basis.rotated(joint.transform.basis.x, deg2rad(90))
-    joint.set_node_a("../%s" % wheel_body.name)
-    joint.set_node_b("../%s" % parent_body.name)
-    joint.set_param_z(Generic6DOFJoint.PARAM_ANGULAR_MOTOR_TARGET_VELOCITY, 0)
+    joint.name = joint_placeholder.name
+    joint.set_node_a(joint_placeholder.node_a)
+    joint.set_node_b(joint_placeholder.node_b)
+    joint.transform = joint_placeholder.transform
+    
+    # work around a bullet bug that causes generic 6 DOF joints to freak out
+    # when rotating in the Y axis
+    joint.rotate(joint.transform.basis.x, TAU/4)
     joint.set_flag_z(Generic6DOFJoint.FLAG_ENABLE_ANGULAR_LIMIT, false)
-    joint.set_flag_z(Generic6DOFJoint.FLAG_ENABLE_MOTOR, true)
-    craft.node.add_child(joint)
     
-    var power_string: String = chip["power"]
-    var reversed := false
-    var marker := power_string[0]
-    if marker == "+":
-        power_string.erase(0, 1)
-    elif marker == "-":
-        power_string.erase(0, 1)
-        reversed = true
-    craft.add_motor(power_string, joint, reversed)
+    if joint_placeholder.power_var.from_var:
+        joint.set_flag_z(Generic6DOFJoint.FLAG_ENABLE_MOTOR, true)
+        craft.add_motor(
+            joint_placeholder.power_var.var_name,
+            joint,
+            joint_placeholder.power_var.reverse
+        )
+    elif joint_placeholder.power_var.constant_value > 0:
+        joint.set_flag_z(Generic6DOFJoint.FLAG_ENABLE_MOTOR, true)
+        joint.set_param_z(
+            Generic6DOFJoint.PARAM_ANGULAR_MOTOR_TARGET_VELOCITY,
+            joint_placeholder.power_var.constant_value
+        )
     
-    return wheel_body
+    return joint
     
-func attach_rudder(
-    craft: Craft,
-    chip: Dictionary,
-    parent_body: RigidBody,
-    parent_shape: CollisionShape,
-    attachment: String,
-    angle: float
-) -> RigidBody:
-    var rudder_body := RigidBody.new()
-    rudder_body.name = "rudder"
-    rudder_body.transform = _calculate_chip_transform(rudder_body.transform, parent_shape, attachment, angle)
-    craft.node.add_child(rudder_body)
-    
-    var joint := Generic6DOFJoint.new()
-    joint.name = "Axle: %s -> %s" % [rudder_body.name, parent_body.name]
-    joint.transform.origin = attachment_offsets[attachment]
-    joint.set_node_a("../%s" % rudder_body.name)
-    joint.set_node_b("../%s" % parent_body.name)
-    craft.node.add_child(joint)
-    
-    var angle_string: String = chip["angle"]
-    var reversed := false
-    var marker := angle_string[0]
-    if marker == "+":
-        angle_string.erase(0, 1)
-    elif marker == "-":
-        angle_string.erase(0, 1)
-        reversed = true
-    craft.add_rudder(angle_string, joint, reversed)
-    
-    return rudder_body

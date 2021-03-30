@@ -7,21 +7,23 @@ func _ready():
     
 func _input(ev: InputEvent):
     if ev is InputEventKey and ev.pressed and ev.scancode == KEY_U:
-        $"/root/World/PlayerChips".queue_free()
-        load_craft()
+        var craft := CraftController.get_active_craft()
+        if craft:
+            CraftController.set_active_craft(null)
+            craft.node.queue_free()
+            call_deferred("load_craft")
 
 func load_craft():
     var loader := ChipLoader.new()
-    var craft := loader.load_chips("res://test/chips/basic.json")
+    var craft := loader.load_chips("res://test/chips/basic.json", self)
     if craft:
-        print("successfully loaded craft!")
         call_deferred("spawn_craft", craft)
     else:
-        print("failed to load craft")
+        push_error("failed to load craft")
 
 func spawn_craft(craft: Craft):
     $"/root/World".add_child(craft.node)
-    craft.core_body.transform.origin = $"../SpawnPoint".transform.origin
+    # craft.core_body.transform.origin = $"../SpawnPoint".transform.origin
     CraftController.set_active_craft(craft)
     
     $"/root/World/Camera".target = craft.core_body
