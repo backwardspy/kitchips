@@ -4,14 +4,17 @@ onready var lbl_craft_vars := $UI/CraftVars
 
 func _input(ev: InputEvent):
     if ev is InputEventKey and ev.pressed and ev.scancode == KEY_Y:
-        var player_chips: RigidBody = $"/root/World/PlayerChips/CoreBody"
-        if player_chips:
+        var craft := CraftController.get_active_craft()
+        if craft:
             var offset := Vector3(
-                rand_range(-0.05, 0.05),
+                rand_range(-0.5, 0.5),
                 0,
-                rand_range(-0.05, 0.05)
+                rand_range(-0.5, 0.5)
             )
-            player_chips.add_force(Vector3.UP * 500, offset)
+            
+            for child in craft.node.get_children():
+                if child is RigidBody:
+                    child.add_force(Vector3.UP * 1500, offset)
 
 func _process(_dt: float):
     var craft := CraftController.get_active_craft()

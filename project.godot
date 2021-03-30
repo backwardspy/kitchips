@@ -40,6 +40,10 @@ config/icon="res://icon.png"
 
 CraftController="*res://chips/scripts/CraftController.gd"
 
+[physics]
+
+common/physics_fps=240
+
 [rendering]
 
 quality/filters/msaa=3

@@ -7,8 +7,8 @@
         {
             "name": "engine",
             "default": 0,
-            "min": -15,
-            "max": 50,
+            "min": -10,
+            "max": 30,
             "step": 10,
             "gravity": 50,
             "+key": "up",
@@ -16,12 +16,12 @@
         }, {
             "name": "handle",
             "default": 0,
-            "min": -15,
-            "max": 15,
-            "step": 10,
-            "gravity": 50,
-            "+key": "left",
-            "-key": "right"
+            "min": -30,
+            "max": 30,
+            "step": 30,
+            "gravity": 120,
+            "+key": "right",
+            "-key": "left"
         }
     ],
     "body": {
@@ -44,9 +44,9 @@
                                 "children": [
                                     {
                                         "type": "wheel",
-                                        "attached": "-x",
+                                        "attached": "-z",
                                         "angle": -90,
-                                        "power": "-engine",
+                                        "power": "engine",
                                         "children": []
                                     }
                                 ]
@@ -58,9 +58,9 @@
                                 "children": [
                                     {
                                         "type": "wheel",
-                                        "attached": "+x",
+                                        "attached": "-z",
                                         "angle": -90,
-                                        "power": "engine",
+                                        "power": "-engine",
                                         "children": []
                                     }
                                 ]
@@ -81,7 +81,7 @@
                         "children": [
                             {
                                 "type": "wheel",
-                                "attached": "-x",
+                                "attached": "-z",
                                 "angle": -90,
                                 "power": "-engine",
                                 "children": []
@@ -95,7 +95,7 @@
                         "children": [
                             {
                                 "type": "wheel",
-                                "attached": "+x",
+                                "attached": "-z",
                                 "angle": -90,
                                 "power": "engine",
                                 "children": []

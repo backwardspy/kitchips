@@ -27,11 +27,11 @@ func _process(dt: float):
             var mult := -1 if motor.reversed else 1
             joint.set_param_z(Generic6DOFJoint.PARAM_ANGULAR_MOTOR_TARGET_VELOCITY, v.current_value * mult)
         
-        for rudder in v.rudders:
-            var joint: Generic6DOFJoint = rudder.joint
+        for rudder in v.hinges:
+            var joint: HingeJoint = rudder.joint
             var mult := -1 if rudder.reversed else 1
-            joint.set_param_y(Generic6DOFJoint.PARAM_ANGULAR_LOWER_LIMIT, deg2rad(v.current_value * mult))
-            joint.set_param_y(Generic6DOFJoint.PARAM_ANGULAR_UPPER_LIMIT, deg2rad(v.current_value * mult))
+            joint.set_param(HingeJoint.PARAM_LIMIT_LOWER, deg2rad(v.current_value * mult))
+            joint.set_param(HingeJoint.PARAM_LIMIT_UPPER, deg2rad(v.current_value * mult))
         
 func _input(ev: InputEvent):
     if not _craft:
