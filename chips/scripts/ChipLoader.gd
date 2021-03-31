@@ -11,6 +11,7 @@ enum ChipType {
     RUDDER,
     TRIM,
     WHEEL_HUB,
+    JET,
 }
 
 var CHIP_TYPE_NAMES := {
@@ -20,6 +21,7 @@ var CHIP_TYPE_NAMES := {
     ChipType.RUDDER: "Rudder",
     ChipType.TRIM: "Trim",
     ChipType.WHEEL_HUB: "Wheel Hub",
+    ChipType.JET: "Jet",
 }
 
 var CHIP_SCENES := {
@@ -29,6 +31,7 @@ var CHIP_SCENES := {
     ChipType.RUDDER: preload("res://chips/Rudder.tscn"),
     ChipType.TRIM: preload("res://chips/Trim.tscn"),
     ChipType.WHEEL_HUB: preload("res://chips/WheelHub.tscn"),
+    ChipType.JET: preload("res://chips/Jet.tscn")
 }
 const WHEEL_SCENE := preload("res://chips/Wheel.tscn")
 
@@ -59,6 +62,7 @@ var CHIP_TYPE_JOINTS := {
     ChipType.RUDDER: JointType.RUDDER,
     ChipType.TRIM: JointType.TRIM,
     ChipType.WHEEL_HUB: JointType.CHIP,
+    ChipType.JET: JointType.CHIP,
 }
 
 var JOINT_TYPE_AXES := {
@@ -101,6 +105,7 @@ var CHIP_TYPE_STRING_TO_TYPE := {
     "rudder": ChipType.RUDDER,
     "trim": ChipType.TRIM,
     "wheel": ChipType.WHEEL_HUB,
+    "jet": ChipType.JET,
 }
 
 var ATTACHMENT_STRING_TO_ATTACHMENT := {
@@ -222,7 +227,7 @@ func parse_body(craft: Craft, chips: Dictionary, temp_container: Node):
     craft.core_body = make_core()
     var id := 0
     for child in root_chip["children"]:
-        id = attach_chip_tree(craft.core_body, child, joint_placeholders, id)
+        id = attach_chip_tree(craft, craft.core_body, child, joint_placeholders, id)
 
     # make godot calculate everybody's global transforms
     temp_container.add_child(craft.core_body)
@@ -238,6 +243,7 @@ func parse_body(craft: Craft, chips: Dictionary, temp_container: Node):
     return craft
 
 func attach_chip_tree(
+    craft: Craft,
     parent_body: RigidBody,
     child_config: Dictionary,
     joint_placeholders: Array,
@@ -250,6 +256,7 @@ func attach_chip_tree(
     var power_var := VarConfig.new(child_config.get("power", 0.0))
 
     var body := attach(
+        craft,
         chip_type,
         parent_body,
         attachment,
@@ -260,8 +267,8 @@ func attach_chip_tree(
     )
     id += 1
 
-    for child in child_config["children"]:
-        id = attach_chip_tree(body, child, joint_placeholders, id)
+    for child in child_config.get("children", []):
+        id = attach_chip_tree(craft, body, child, joint_placeholders, id)
         
     return id
 
@@ -271,6 +278,7 @@ func make_core() -> RigidBody:
     return core
 
 func attach(
+    craft: Craft,
     chip_type: int,
     parent: RigidBody,
     attachment: int,
@@ -305,6 +313,7 @@ func attach(
     
     match chip_type:
         ChipType.WHEEL_HUB: attach_wheel_to_hub(chip, power_var, joint_placeholders)
+        ChipType.JET: craft.add_jet(power_var.var_name, chip, power_var.reverse)
     
     return chip
     
