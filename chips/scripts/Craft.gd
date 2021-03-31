@@ -3,7 +3,7 @@ extends Object
 class_name Craft
 
 class Motor:
-    var joint: Generic6DOFJoint
+    var body: RigidBody
     var reversed: bool
     
 class Hinge:
@@ -37,10 +37,10 @@ func add_var(v: Var):
     _vars.append(v)
     _name_to_var[v.name] = v
 
-func add_motor(var_name: String, joint: Generic6DOFJoint, reverse: bool):
+func add_motor(var_name: String, body: RigidBody, reverse: bool):
     var v: Var = _name_to_var[var_name]
     var motor := Motor.new()
-    motor.joint = joint
+    motor.body = body
     motor.reversed = reverse
     v.motors.append(motor)
     

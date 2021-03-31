@@ -145,8 +145,8 @@ class VarConfig:
             _: return value
 
 class JointPlaceholder extends Spatial:
-    var node_a: String
-    var node_b: String
+    var node_a: RigidBody
+    var node_b: RigidBody
     var type: int   # a JointType value
     var angle_var: VarConfig
     var power_var: VarConfig
@@ -317,8 +317,8 @@ func make_joint(
 ) -> JointPlaceholder:
     var joint := JointPlaceholder.new()
     joint.name = "[%s] %s -> %s" % [JOINT_TYPE_TAGS[joint_type], from.name, to.name]
-    joint.node_a = "../%s" % from.name
-    joint.node_b = "../%s" % to.name
+    joint.node_a = from
+    joint.node_b = to
     joint.type = joint_type
     joint.angle_var = angle_var
     joint.power_var = power_var
@@ -364,8 +364,8 @@ func create_joint_from_placeholder(craft: Craft, joint_placeholder: JointPlaceho
 func create_hinge_joint(craft: Craft, joint_placeholder: JointPlaceholder) -> Joint:
     var joint := HingeJoint.new()
     joint.name = joint_placeholder.name
-    joint.set_node_a(joint_placeholder.node_a)
-    joint.set_node_b(joint_placeholder.node_b)
+    joint.set_node_a("../%s" % joint_placeholder.node_a.name)
+    joint.set_node_b("../%s" % joint_placeholder.node_b.name)
     joint.transform = joint_placeholder.transform
     
     match joint_placeholder.type:
@@ -389,8 +389,8 @@ func create_hinge_joint(craft: Craft, joint_placeholder: JointPlaceholder) -> Jo
 func create_wheel_joint(craft: Craft, joint_placeholder: JointPlaceholder) -> Joint:
     var joint := Generic6DOFJoint.new()
     joint.name = joint_placeholder.name
-    joint.set_node_a(joint_placeholder.node_a)
-    joint.set_node_b(joint_placeholder.node_b)
+    joint.set_node_a("../%s" % joint_placeholder.node_a.name)
+    joint.set_node_b("../%s" % joint_placeholder.node_b.name)
     joint.transform = joint_placeholder.transform
     
     # work around a bullet bug that causes generic 6 DOF joints to freak out
@@ -399,17 +399,10 @@ func create_wheel_joint(craft: Craft, joint_placeholder: JointPlaceholder) -> Jo
     joint.set_flag_z(Generic6DOFJoint.FLAG_ENABLE_ANGULAR_LIMIT, false)
     
     if joint_placeholder.power_var.from_var:
-        joint.set_flag_z(Generic6DOFJoint.FLAG_ENABLE_MOTOR, true)
         craft.add_motor(
             joint_placeholder.power_var.var_name,
-            joint,
+            joint_placeholder.node_a,
             joint_placeholder.power_var.reverse
-        )
-    elif joint_placeholder.power_var.constant_value > 0:
-        joint.set_flag_z(Generic6DOFJoint.FLAG_ENABLE_MOTOR, true)
-        joint.set_param_z(
-            Generic6DOFJoint.PARAM_ANGULAR_MOTOR_TARGET_VELOCITY,
-            joint_placeholder.power_var.constant_value
         )
     
     return joint

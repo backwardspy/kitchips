@@ -7,10 +7,10 @@
         {
             "name": "engine",
             "default": 0,
-            "min": -10,
-            "max": 30,
-            "step": 10,
-            "gravity": 50,
+            "min": -40,
+            "max": 80,
+            "step": 40,
+            "gravity": 100,
             "+key": "up",
             "-key": "down"
         }, {
@@ -18,8 +18,8 @@
             "default": 0,
             "min": -30,
             "max": 30,
-            "step": 30,
-            "gravity": 120,
+            "step": 20,
+            "gravity": 45,
             "+key": "right",
             "-key": "left"
         }
@@ -46,7 +46,6 @@
                                         "type": "wheel",
                                         "attached": "-z",
                                         "angle": -90,
-                                        "power": "engine",
                                         "children": []
                                     }
                                 ]
@@ -60,7 +59,6 @@
                                         "type": "wheel",
                                         "attached": "-z",
                                         "angle": -90,
-                                        "power": "-engine",
                                         "children": []
                                     }
                                 ]
@@ -83,7 +81,7 @@
                                 "type": "wheel",
                                 "attached": "-z",
                                 "angle": -90,
-                                "power": "-engine",
+                                "power": "engine",
                                 "children": []
                             }
                         ]
@@ -97,7 +95,7 @@
                                 "type": "wheel",
                                 "attached": "-z",
                                 "angle": -90,
-                                "power": "engine",
+                                "power": "-engine",
                                 "children": []
                             }
                         ]
