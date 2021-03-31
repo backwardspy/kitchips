@@ -41,8 +41,10 @@ func _process(dt: float):
             
         for jet in v.jets:
             var body: RigidBody = jet.body
-            var mult := -1 if jet.reversed else 1
-            body.add_central_force(body.transform.basis.y * v.current_value * mult)
+            var mult := -1.0 if jet.reversed else 1.0
+            var power: float = v.current_value * mult
+            body.add_central_force(body.transform.basis.y * power)
+            body.get_node("Flame").set_power(power)
         
 func _input(ev: InputEvent):
     if not _craft:

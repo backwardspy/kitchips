@@ -82,6 +82,7 @@
                                 "type": "wheel",
                                 "attached": "-z",
                                 "angle": -90,
+                                "power": "engine",
                                 "children": []
                             }
                         ]
@@ -95,6 +96,7 @@
                                 "type": "wheel",
                                 "attached": "-z",
                                 "angle": -90,
+                                "power": "-engine",
                                 "children": []
                             }
                         ]
