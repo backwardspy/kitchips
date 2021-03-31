@@ -9,6 +9,11 @@
 config_version=4
 
 _global_script_classes=[ {
+"base": "Node",
+"class": "Aerodynamics",
+"language": "GDScript",
+"path": "res://aerodynamics/Aerodynamics.gd"
+}, {
 "base": "Object",
 "class": "ChipLoader",
 "language": "GDScript",
@@ -25,6 +30,7 @@ _global_script_classes=[ {
 "path": "res://chips/scripts/Craft.gd"
 } ]
 _global_script_class_icons={
+"Aerodynamics": "",
 "ChipLoader": "",
 "Constants": "",
 "Craft": ""

@@ -1,0 +1,169 @@
+{
+    "meta": {
+        "name": "Basic",
+        "author": "backwardspy"
+    },
+    "vars": [
+        {
+            "name": "engine",
+            "default": 0,
+            "min": 0,
+            "max": 1000,
+            "step": 500,
+            "gravity": 500,
+            "+key": "z",
+            "-key": "x"
+        },
+        {
+            "name": "roll",
+            "default": 0,
+            "min": -10,
+            "max": 10,
+            "step": 50,
+            "gravity": 50,
+            "+key": "right",
+            "-key": "left"
+        },
+        {
+            "name": "pitch",
+            "default": 0,
+            "min": -30,
+            "max": 30,
+            "step": 60,
+            "gravity": 60,
+            "+key": "up",
+            "-key": "down"
+        }
+    ],
+    "body": {
+        "type": "core",
+        "children": [
+            {
+                "type": "wheel",
+                "attached": "-x",
+                "angle": -80
+            },
+            {
+                "type": "wheel",
+                "attached": "+x",
+                "angle": -80
+            },
+            {
+                "type": "chip",
+                "attached": "-z"
+            },
+            {
+                "type": "chip",
+                "attached": "+z",
+                "children": [
+                    {
+                        "type": "chip",
+                        "attached": "-z",
+                        "children": [
+                            {
+                                "type": "chip",
+                                "attached": "-z",
+                                "children": [
+                                    {
+                                        "type": "chip",
+                                        "attached": "+x",
+                                        "angle": 70
+                                    },
+                                    {
+                                        "type": "chip",
+                                        "attached": "-x",
+                                        "angle": 70
+                                    },
+                                    {
+                                        "type": "trim",
+                                        "attached": "+x",
+                                        "angle": "-pitch"
+                                    },
+                                    {
+                                        "type": "trim",
+                                        "attached": "-x",
+                                        "angle": "pitch"
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "type": "chip",
+                "attached": "+x",
+                "angle": 20,
+                "children": [
+                    {
+                        "type": "frame",
+                        "attached": "+x",
+                        "angle": 150,
+                        "children": [
+                            {
+                                "type": "jet",
+                                "attached": "-z",
+                                "angle": 120,
+                                "power": "-engine"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "trim",
+                        "attached": "-z",
+                        "angle": "roll",
+                        "children": [
+                            {
+                                "type": "chip",
+                                "attached": "-z",
+                                "children": [
+                                    {
+                                        "type": "chip",
+                                        "attached": "-z"
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "type": "chip",
+                "attached": "-x",
+                "angle": 20,
+                "children": [
+                    {
+                        "type": "frame",
+                        "attached": "-x",
+                        "angle": 150,
+                        "children": [
+                            {
+                                "type": "jet",
+                                "attached": "-z",
+                                "angle": 120,
+                                "power": "-engine"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "trim",
+                        "attached": "-z",
+                        "angle": "roll",
+                        "children": [
+                            {
+                                "type": "chip",
+                                "attached": "-z",
+                                "children": [
+                                    {
+                                        "type": "chip",
+                                        "attached": "-z"
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+}

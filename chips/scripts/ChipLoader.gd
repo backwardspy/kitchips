@@ -226,7 +226,7 @@ func parse_body(craft: Craft, chips: Dictionary, temp_container: Node):
 
     craft.core_body = make_core()
     var id := 0
-    for child in root_chip["children"]:
+    for child in root_chip.get("children", []):
         id = attach_chip_tree(craft, craft.core_body, child, joint_placeholders, id)
 
     # make godot calculate everybody's global transforms
@@ -252,7 +252,7 @@ func attach_chip_tree(
     var chip_type: int = CHIP_TYPE_STRING_TO_TYPE[child_config["type"]]
     var attachment: int = ATTACHMENT_STRING_TO_ATTACHMENT[child_config["attached"]]
     
-    var angle_var := VarConfig.new(child_config["angle"], VarConversion.DEG2RAD)
+    var angle_var := VarConfig.new(child_config.get("angle", 0.0), VarConversion.DEG2RAD)
     var power_var := VarConfig.new(child_config.get("power", 0.0))
 
     var body := attach(
@@ -291,10 +291,14 @@ func attach(
     chip.name = "%s %d" % [CHIP_TYPE_NAMES[chip_type], id]
     var joint_type: int = CHIP_TYPE_JOINTS[chip_type]
     
+    if chip_type in [ChipType.CHIP, ChipType.RUDDER, ChipType.TRIM]:
+        chip.add_to_group("aerodynamics")
+    
     # point chip in correct direction
     chip.rotate(chip.transform.basis.y, ATTACH_ROTATION[attachment])
     chip.translate(Vector3(0, 0, -Constants.CHIP_HALF_SIZE))
-    chip.rotate(JOINT_TYPE_AXES[joint_type], angle_var.constant_value)
+    chip.rotate(get_joint_axis(chip, joint_type), angle_var.constant_value)
+    # chip.rotate(JOINT_TYPE_AXES[joint_type], angle_var.constant_value)
     chip.translate(Vector3(0, 0, -Constants.CHIP_HALF_SIZE))
     
     parent.add_child(chip)
@@ -313,9 +317,20 @@ func attach(
     
     match chip_type:
         ChipType.WHEEL_HUB: attach_wheel_to_hub(chip, power_var, joint_placeholders)
-        ChipType.JET: craft.add_jet(power_var.var_name, chip, power_var.reverse)
+        ChipType.JET:
+            if power_var.from_var:
+                craft.add_jet(power_var.var_name, chip, power_var.reverse)
     
     return chip
+    
+func get_joint_axis(chip: RigidBody, joint_type: int) -> Vector3:
+    match joint_type:
+        JointType.CHIP: return chip.transform.basis.x
+        JointType.RUDDER: return chip.transform.basis.y
+        JointType.TRIM: return chip.transform.basis.z
+        _:
+            push_error("unsupported joint type in get_joint_axis - defaulting to x axis")
+            return chip.transform.basis.x
     
 func make_joint(
     from: RigidBody,
