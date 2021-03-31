@@ -23,15 +23,21 @@ func _process(dt: float):
             relax_var(v, dt)
         
         for motor in v.motors:
-            var joint: Generic6DOFJoint = motor.joint
+            var body: RigidBody = motor.body
             var mult := -1 if motor.reversed else 1
-            joint.set_param_z(Generic6DOFJoint.PARAM_ANGULAR_MOTOR_TARGET_VELOCITY, v.current_value * mult)
+            body.add_torque(body.transform.basis.y * v.current_value * mult)
         
         for rudder in v.hinges:
             var joint: HingeJoint = rudder.joint
             var mult := -1 if rudder.reversed else 1
-            joint.set_param(HingeJoint.PARAM_LIMIT_LOWER, deg2rad(v.current_value * mult))
-            joint.set_param(HingeJoint.PARAM_LIMIT_UPPER, deg2rad(v.current_value * mult))
+            joint.set_param(
+                HingeJoint.PARAM_LIMIT_LOWER,
+                deg2rad(v.current_value * mult)
+            )
+            joint.set_param(
+                HingeJoint.PARAM_LIMIT_UPPER,
+                deg2rad(v.current_value * mult)
+            )
         
 func _input(ev: InputEvent):
     if not _craft:
