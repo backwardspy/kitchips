@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=2]
+[gd_scene load_steps=18 format=2]
 
 [ext_resource path="res://world/WorldLoader.gd" type="Script" id=1]
 [ext_resource path="res://debug/DebugDude.gd" type="Script" id=2]
@@ -8,6 +8,8 @@
 [ext_resource path="res://terrain/textures/ground013/Ground013_1K_Roughness.jpg" type="Texture" id=6]
 [ext_resource path="res://camera/FollowCamera.gd" type="Script" id=7]
 [ext_resource path="res://debug/JointVisualiser.gd" type="Script" id=8]
+[ext_resource path="res://debug/AerodynamicsVisualiser.gd" type="Script" id=9]
+[ext_resource path="res://terrain/carrier/carrier.dae" type="PackedScene" id=10]
 
 [sub_resource type="SpatialMaterial" id=1]
 flags_unshaded = true
@@ -16,10 +18,10 @@ flags_do_not_receive_shadows = true
 vertex_color_use_as_albedo = true
 
 [sub_resource type="BoxShape" id=2]
-extents = Vector3( 250, 1, 250 )
+extents = Vector3( 1000, 1, 1000 )
 
 [sub_resource type="CubeMesh" id=3]
-size = Vector3( 500, 2, 500 )
+size = Vector3( 2000, 2, 2000 )
 
 [sub_resource type="SpatialMaterial" id=4]
 albedo_texture = ExtResource( 3 )
@@ -33,6 +35,15 @@ ao_texture = ExtResource( 4 )
 ao_on_uv2 = false
 ao_texture_channel = 0
 uv1_scale = Vector3( 250, 250, 250 )
+
+[sub_resource type="BoxShape" id=5]
+extents = Vector3( 3.26289, 1, 11.9093 )
+
+[sub_resource type="BoxShape" id=6]
+extents = Vector3( 2.09775, 0.247877, 1.65651 )
+
+[sub_resource type="BoxShape" id=7]
+extents = Vector3( 1, 1, 1.65945 )
 
 [node name="World" type="Spatial"]
 
@@ -64,6 +75,11 @@ visible = false
 material_override = SubResource( 1 )
 script = ExtResource( 8 )
 
+[node name="AerodynamicsVisualiser" type="ImmediateGeometry" parent="."]
+visible = false
+material_override = SubResource( 1 )
+script = ExtResource( 9 )
+
 [node name="Camera" type="Camera" parent="."]
 transform = Transform( 0.944925, -0.0695627, 0.319807, 0, 0.977151, 0.212545, -0.327285, -0.200839, 0.923336, 4.1655, 4.15211, 9.75323 )
 current = true
@@ -87,3 +103,23 @@ material/0 = SubResource( 4 )
 transform = Transform( 0.791735, 0.418692, -0.444806, -0.182217, 0.856881, 0.482237, 0.583055, -0.300752, 0.754715, 0, 5.06247, 0 )
 light_color = Color( 1, 0.980392, 0.913725, 1 )
 shadow_enabled = true
+
+[node name="StaticBody" type="StaticBody" parent="."]
+transform = Transform( 10, 0, 0, 0, 10, 0, 0, 0, 10, -131.199, 2.15939, 0 )
+
+[node name="model" parent="StaticBody" instance=ExtResource( 10 )]
+
+[node name="CollisionShape" type="CollisionShape" parent="StaticBody"]
+shape = SubResource( 5 )
+
+[node name="CollisionShape2" type="CollisionShape" parent="StaticBody"]
+transform = Transform( 1, 0, 0, 0, 0.948207, 0.317652, 0, -0.317652, 0.948207, 0.823247, 1.31122, 10.2722 )
+shape = SubResource( 6 )
+
+[node name="CollisionShape3" type="CollisionShape" parent="StaticBody"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -2.43775, 1.47014, 2.20919 )
+shape = SubResource( 7 )
+
+[node name="CollisionShape4" type="CollisionShape" parent="StaticBody"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -2.42616, 1.39916, -3.0022 )
+shape = SubResource( 7 )

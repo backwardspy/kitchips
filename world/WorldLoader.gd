@@ -15,7 +15,7 @@ func _input(ev: InputEvent):
 
 func load_craft():
     var loader := ChipLoader.new()
-    var craft := loader.load_chips("res://test/chips/basic.json", self)
+    var craft := loader.load_chips("res://test/chips/plane.json", self)
     if craft:
         call_deferred("spawn_craft", craft)
     else:

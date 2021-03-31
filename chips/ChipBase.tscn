@@ -2,3 +2,4 @@
 
 [node name="ChipBase" type="RigidBody"]
 collision_layer = 2
+can_sleep = false

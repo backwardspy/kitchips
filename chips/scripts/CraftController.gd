@@ -1,23 +1,23 @@
 extends Node
 
-var _craft: Craft = null
+var craft: Craft = null
 
-var _held_keys := {}
+var held_keys := {}
 
 func set_active_craft(craft: Craft):
-    _craft = craft
+    self.craft = craft
     
 func get_active_craft() -> Craft:
-    return _craft
+    return craft
 
 func _process(dt: float):
-    if not _craft:
+    if not craft:
         return
         
-    for v in _craft.vars():
-        if _held_keys.get(v.positive_key, false):
+    for v in craft.vars():
+        if held_keys.get(v.positive_key, false):
             increase_var(v, dt)
-        elif _held_keys.get(v.negative_key, false):
+        elif held_keys.get(v.negative_key, false):
             decrease_var(v, dt)
         else:
             relax_var(v, dt)
@@ -45,13 +45,18 @@ func _process(dt: float):
             var power: float = v.current_value * mult
             body.add_central_force(body.transform.basis.y * power)
             body.get_node("Flame").set_power(power)
+            
+    for body in get_tree().get_nodes_in_group("aerodynamics"):
+        if body is RigidBody:
+            var lift := Aerodynamics.calculate_lift_force(body)
+            body.add_central_force(lift)
         
 func _input(ev: InputEvent):
-    if not _craft:
+    if not craft:
         return
         
     if ev is InputEventKey:
-        _held_keys[ev.scancode] = ev.pressed
+        held_keys[ev.scancode] = ev.pressed
 
 func increase_var(v: Craft.Var, dt: float):
     v.current_value = min(v.maximum, v.current_value + v.step * dt)
