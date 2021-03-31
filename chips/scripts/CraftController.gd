@@ -38,6 +38,11 @@ func _process(dt: float):
                 HingeJoint.PARAM_LIMIT_UPPER,
                 deg2rad(v.current_value * mult)
             )
+            
+        for jet in v.jets:
+            var body: RigidBody = jet.body
+            var mult := -1 if jet.reversed else 1
+            body.add_central_force(body.transform.basis.y * v.current_value * mult)
         
 func _input(ev: InputEvent):
     if not _craft:

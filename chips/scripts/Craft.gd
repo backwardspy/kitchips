@@ -10,6 +10,10 @@ class Hinge:
     var joint: HingeJoint
     var reversed: bool
 
+class Jet:
+    var body: RigidBody
+    var reversed: bool
+
 class Var:
     var name: String
     var default: float
@@ -24,6 +28,7 @@ class Var:
     
     var motors: Array
     var hinges: Array
+    var jets: Array
     
 var name: String
 var author: String
@@ -37,19 +42,26 @@ func add_var(v: Var):
     _vars.append(v)
     _name_to_var[v.name] = v
 
-func add_motor(var_name: String, body: RigidBody, reverse: bool):
+func add_motor(var_name: String, body: RigidBody, reverse: bool) -> void:
     var v: Var = _name_to_var[var_name]
     var motor := Motor.new()
     motor.body = body
     motor.reversed = reverse
     v.motors.append(motor)
     
-func add_hinge(var_name: String, joint: HingeJoint, reverse: bool):
+func add_hinge(var_name: String, joint: HingeJoint, reverse: bool) -> void:
     var v: Var = _name_to_var[var_name]
     var hinge := Hinge.new()
     hinge.joint = joint
     hinge.reversed = reverse
     v.hinges.append(hinge)
+    
+func add_jet(var_name: String, body: RigidBody, reverse: bool) -> void:
+    var v: Var = _name_to_var[var_name]
+    var jet := Jet.new()
+    jet.body = body
+    jet.reversed = reverse
+    v.jets.append(jet)
 
 func vars() -> Array:
     return _vars
