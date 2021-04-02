@@ -166,7 +166,7 @@ func json_from_file(file_path: String) -> JSONParseResult:
     file.close()
     return JSON.parse(content)
 
-func load_chips(file_path: String, temp_container: Node) -> Craft:
+func load_chips(file_path: String, temp_container: Node, spawn_position: Vector3) -> Craft:
     var json := json_from_file(file_path)
     
     if not json:
@@ -182,13 +182,13 @@ func load_chips(file_path: String, temp_container: Node) -> Craft:
         push_error(error_string % file_path)
         return null
         
-    return parse_chips(json.result, temp_container)
+    return parse_chips(json.result, temp_container, spawn_position)
 
-func parse_chips(chips: Dictionary, temp_container: Node) -> Craft:
+func parse_chips(chips: Dictionary, temp_container: Node, spawn_position: Vector3) -> Craft:
     var craft = Craft.new()
     parse_meta(craft, chips)
     parse_vars(craft, chips)
-    parse_body(craft, chips, temp_container)
+    parse_body(craft, chips, temp_container, spawn_position)
     return craft
 
 func parse_meta(craft: Craft, chips: Dictionary):
@@ -211,7 +211,7 @@ func parse_vars(craft: Craft, chips: Dictionary):
         
         craft.add_var(v)
 
-func parse_body(craft: Craft, chips: Dictionary, temp_container: Node):
+func parse_body(craft: Craft, chips: Dictionary, temp_container: Node, spawn_position: Vector3):
     var root_chip: Dictionary = chips["body"]
     if root_chip["type"] != "core":
         var error_string := 'expected root chip to be of type "core", instead got "%s"'
@@ -224,7 +224,7 @@ func parse_body(craft: Craft, chips: Dictionary, temp_container: Node):
     craft.node = Node.new()
     craft.node.name = "Player Craft"
 
-    craft.core_body = make_core()
+    craft.core_body = make_core(spawn_position)
     var id := 0
     for child in root_chip.get("children", []):
         id = attach_chip_tree(craft, craft.core_body, child, joint_placeholders, id)
@@ -272,9 +272,10 @@ func attach_chip_tree(
         
     return id
 
-func make_core() -> RigidBody:
+func make_core(spawn_position: Vector3) -> RigidBody:
     var core: RigidBody = CHIP_SCENES[ChipType.CORE].instance()
     core.name = "Core"
+    core.global_transform.origin = spawn_position
     return core
 
 func attach(
@@ -288,18 +289,31 @@ func attach(
     joint_placeholders: Array
 ) -> RigidBody:
     var chip: RigidBody = CHIP_SCENES[chip_type].instance()
-    chip.name = "%s %d" % [CHIP_TYPE_NAMES[chip_type], id]
+    var name := "%s %d" % [CHIP_TYPE_NAMES[chip_type], id]
+    chip.name = name
     var joint_type: int = CHIP_TYPE_JOINTS[chip_type]
     
     if chip_type in [ChipType.CHIP, ChipType.RUDDER, ChipType.TRIM]:
         chip.add_to_group("aerodynamics")
+        
+    if chip_type == ChipType.WHEEL_HUB:
+        chip.add_to_group("wheel hubs")
+        
+    var attach_angle := angle_var.constant_value
+    if angle_var.from_var:
+        attach_angle = deg2rad(craft.get_var(angle_var.var_name).default)
     
     # point chip in correct direction
     chip.rotate(chip.transform.basis.y, ATTACH_ROTATION[attachment])
     chip.translate(Vector3(0, 0, -Constants.CHIP_HALF_SIZE))
-    chip.rotate(get_joint_axis(chip, joint_type), angle_var.constant_value)
-    # chip.rotate(JOINT_TYPE_AXES[joint_type], angle_var.constant_value)
+    chip.rotate(get_joint_axis(chip, joint_type), attach_angle)
     chip.translate(Vector3(0, 0, -Constants.CHIP_HALF_SIZE))
+    
+    if parent.is_in_group("wheel hubs"):
+        for child in parent.get_children():
+            if child.is_in_group("wheels"):
+                parent = child
+                break
     
     parent.add_child(chip)
     
@@ -351,6 +365,7 @@ func make_joint(
 func attach_wheel_to_hub(hub: RigidBody, power_var: VarConfig, joint_placeholders: Array) -> void:
     var wheel := WHEEL_SCENE.instance()
     wheel.name = "Wheel on %s" % hub.name
+    wheel.add_to_group("wheels")
     hub.add_child(wheel)
     
     var joint := make_joint(wheel, hub, JointType.WHEEL, null, power_var)

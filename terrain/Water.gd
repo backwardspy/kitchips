@@ -1,0 +1,17 @@
+extends MeshInstance
+
+var craft: Craft = null
+
+func set_craft(craft: Craft):
+    self.craft = craft
+    
+func _process(_dt: float) -> void:
+    if not craft:
+        return
+        
+    global_transform.origin.x = craft.core_body.global_transform.origin.x
+    global_transform.origin.z = craft.core_body.global_transform.origin.z
+    
+    var mat: SpatialMaterial = get_surface_material(0)
+    mat.uv1_offset.x = global_transform.origin.x * 0.01
+    mat.uv1_offset.y = global_transform.origin.z * 0.01

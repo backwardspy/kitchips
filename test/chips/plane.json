@@ -7,7 +7,7 @@
         {
             "name": "engine",
             "default": 0,
-            "min": 0,
+            "min": -800,
             "max": 1000,
             "step": 500,
             "gravity": 500,
@@ -50,7 +50,7 @@
             },
             {
                 "type": "chip",
-                "attached": "-z"
+                "attached": "-z",
             },
             {
                 "type": "chip",

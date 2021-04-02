@@ -1,6 +1,4 @@
-extends Camera
-
-var target: Spatial = null
+extends "res://camera/BaseCamera.gd"
 
 func _process(_dt: float):
     if not target:

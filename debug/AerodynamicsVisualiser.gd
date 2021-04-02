@@ -16,9 +16,9 @@ func _process(dt: float) -> void:
     set_color(Color.white)
     for body in get_tree().get_nodes_in_group("aerodynamics"):
         if body is RigidBody:
-            var lift := Aerodynamics.calculate_lift_force(body)
+            var lift := Aerodynamics.calculate_lift_force(body, false)
             add_vertex(body.global_transform.origin)
-            add_vertex(body.global_transform.origin + lift)
+            add_vertex(body.global_transform.origin + lift * 0.003)
             
             coms.append(body.global_transform.origin)
             
