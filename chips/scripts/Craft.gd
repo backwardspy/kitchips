@@ -57,7 +57,7 @@ func add_hinge(var_name: String, joint: HingeJoint, reverse: bool) -> void:
     v.hinges.append(hinge)
     
 func add_jet(var_name: String, body: RigidBody, reverse: bool) -> void:
-    var v: Var = _name_to_var[var_name]
+    var v := get_var(var_name)
     var jet := Jet.new()
     jet.body = body
     jet.reversed = reverse
@@ -65,3 +65,6 @@ func add_jet(var_name: String, body: RigidBody, reverse: bool) -> void:
 
 func vars() -> Array:
     return _vars
+    
+func get_var(name: String) -> Var:
+    return _name_to_var[name]

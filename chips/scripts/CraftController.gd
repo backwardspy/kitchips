@@ -27,17 +27,12 @@ func _process(dt: float):
             var mult := -1 if motor.reversed else 1
             body.add_torque(body.transform.basis.y * v.current_value * mult)
         
-        for rudder in v.hinges:
-            var joint: HingeJoint = rudder.joint
-            var mult := -1 if rudder.reversed else 1
-            joint.set_param(
-                HingeJoint.PARAM_LIMIT_LOWER,
-                deg2rad(v.current_value * mult)
-            )
-            joint.set_param(
-                HingeJoint.PARAM_LIMIT_UPPER,
-                deg2rad(v.current_value * mult)
-            )
+        for hinge in v.hinges:
+            var joint: HingeJoint = hinge.joint
+            var mult := -1 if hinge.reversed else 1
+            var setpoint := deg2rad(v.current_value * mult - v.default)
+            joint.set_param(HingeJoint.PARAM_LIMIT_LOWER, setpoint)
+            joint.set_param(HingeJoint.PARAM_LIMIT_UPPER, setpoint)
             
         for jet in v.jets:
             var body: RigidBody = jet.body
@@ -48,8 +43,17 @@ func _process(dt: float):
             
     for body in get_tree().get_nodes_in_group("aerodynamics"):
         if body is RigidBody:
-            var lift := Aerodynamics.calculate_lift_force(body)
-            body.add_central_force(lift)
+            var height: float = body.global_transform.origin.y
+            var below_water := height < 0
+            
+            var lift := Aerodynamics.calculate_lift_force(body, below_water)
+            
+            var bouyancy := Vector3.ZERO
+            if below_water:
+                var factor := min(1, -height)   # get depth between 0 and 1
+                bouyancy = Vector3.UP * factor * 100.0
+            
+            body.add_central_force(lift + bouyancy)
         
 func _input(ev: InputEvent):
     if not craft:

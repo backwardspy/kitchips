@@ -1,5 +1,7 @@
 extends Node
 
+signal craft_spawned
+
 const Craft = preload("res://chips/scripts/Craft.gd")
 
 func _ready():
@@ -15,15 +17,19 @@ func _input(ev: InputEvent):
 
 func load_craft():
     var loader := ChipLoader.new()
-    var craft := loader.load_chips("res://test/chips/plane.json", self)
+    var craft := loader.load_chips(
+        "res://test/chips/plane.json",
+        self,
+        $SpawnPoint.global_transform.origin
+    )
     if craft:
         call_deferred("spawn_craft", craft)
     else:
         push_error("failed to load craft")
 
 func spawn_craft(craft: Craft):
-    $"/root/World".add_child(craft.node)
-    # craft.core_body.transform.origin = $"../SpawnPoint".transform.origin
-    CraftController.set_active_craft(craft)
+    get_tree().current_scene.add_child(craft.node)
+    emit_signal("craft_spawned", craft)
     
-    $"/root/World/Camera".target = craft.core_body
+    # CraftController.set_active_craft(craft)
+    # get_viewport().get_camera().target = craft.core_body

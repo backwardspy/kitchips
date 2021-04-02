@@ -1,10 +1,8 @@
-extends Camera
+extends "res://camera/BaseCamera.gd"
 
 export(float) var height: float = 5
 export(float) var distance: float = 15
 export(float) var look_height_offset: float = 3
-
-var target: Spatial = null
 
 func _process(_dt: float):
     if not target:
