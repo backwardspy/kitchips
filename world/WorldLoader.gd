@@ -30,6 +30,3 @@ func load_craft():
 func spawn_craft(craft: Craft):
     get_tree().current_scene.add_child(craft.node)
     emit_signal("craft_spawned", craft)
-    
-    # CraftController.set_active_craft(craft)
-    # get_viewport().get_camera().target = craft.core_body

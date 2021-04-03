@@ -275,7 +275,7 @@ func attach_chip_tree(
 func make_core(spawn_position: Vector3) -> RigidBody:
     var core: RigidBody = CHIP_SCENES[ChipType.CORE].instance()
     core.name = "Core"
-    core.global_transform.origin = spawn_position
+    core.transform.origin = spawn_position
     return core
 
 func attach(

@@ -7,9 +7,6 @@ var above_water := true
 
 var target: Spatial = null
 
-func _ready() -> void:
-    print("camera ready")
-    
 func _process(_dt: float) -> void:
     if above_water and global_transform.origin.y < 0:
         above_water = false

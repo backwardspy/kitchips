@@ -4,8 +4,8 @@ var craft: Craft = null
 
 var held_keys := {}
 
-func set_active_craft(craft: Craft):
-    self.craft = craft
+func set_active_craft(c: Craft):
+    craft = c
     
 func get_active_craft() -> Craft:
     return craft

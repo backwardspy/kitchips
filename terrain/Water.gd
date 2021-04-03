@@ -2,8 +2,8 @@ extends MeshInstance
 
 var craft: Craft = null
 
-func set_craft(craft: Craft):
-    self.craft = craft
+func set_craft(c: Craft):
+    craft = c
     
 func _process(_dt: float) -> void:
     if not craft:
