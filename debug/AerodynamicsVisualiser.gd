@@ -7,23 +7,25 @@ func average(values: Array):
         sum += values[idx]
     return sum / len(values)
 
-func _process(dt: float) -> void:
+func _process(_dt: float) -> void:
     clear()
     begin(Mesh.PRIMITIVE_LINES)
-    
-    var coms := Array()
-    
+
+    var com := Vector3.ZERO
+    var weights := 0.0
+
     set_color(Color.white)
     for body in get_tree().get_nodes_in_group("aerodynamics"):
         if body is RigidBody:
             var lift := Aerodynamics.calculate_lift_force(body, false)
             add_vertex(body.global_transform.origin)
             add_vertex(body.global_transform.origin + lift * 0.003)
-            
-            coms.append(body.global_transform.origin)
-            
-    var com: Vector3 = average(coms)
-    
+
+            com += body.global_transform.origin * body.mass
+            weights += body.mass
+
+    com /= weights
+
     set_color(Color.purple)
     add_vertex(com)
     add_vertex(com + Vector3.UP)
@@ -37,5 +39,5 @@ func _process(dt: float) -> void:
     add_vertex(com + Vector3.FORWARD)
     add_vertex(com)
     add_vertex(com + Vector3.BACK)
-    
+
     end()

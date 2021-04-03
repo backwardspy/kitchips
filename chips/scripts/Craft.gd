@@ -66,5 +66,5 @@ func add_jet(var_name: String, body: RigidBody, reverse: bool) -> void:
 func vars() -> Array:
     return _vars
     
-func get_var(name: String) -> Var:
-    return _name_to_var[name]
+func get_var(var_name: String) -> Var:
+    return _name_to_var[var_name]
