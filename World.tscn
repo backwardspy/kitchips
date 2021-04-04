@@ -1,4 +1,4 @@
-[gd_scene load_steps=28 format=2]
+[gd_scene load_steps=29 format=2]
 
 [ext_resource path="res://world/WorldLoader.gd" type="Script" id=1]
 [ext_resource path="res://debug/DebugDude.gd" type="Script" id=2]
@@ -18,6 +18,7 @@
 [ext_resource path="res://environment/above_water.tres" type="Environment" id=16]
 [ext_resource path="res://terrain/Water.gd" type="Script" id=17]
 [ext_resource path="res://World.gd" type="Script" id=18]
+[ext_resource path="res://gui/GUI.gd" type="Script" id=19]
 
 [sub_resource type="SpatialMaterial" id=1]
 flags_unshaded = true
@@ -80,6 +81,40 @@ uv1_scale = Vector3( 100, 100, 100 )
 
 [node name="World" type="Spatial"]
 script = ExtResource( 18 )
+
+[node name="GUI" type="CanvasLayer" parent="."]
+script = ExtResource( 19 )
+
+[node name="Control" type="Control" parent="GUI"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="LoadButton" type="Button" parent="GUI/Control"]
+margin_right = 12.0
+margin_bottom = 20.0
+text = "Load"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="OpenFileDialog" type="FileDialog" parent="GUI/Control"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -406.0
+margin_top = -198.0
+margin_right = 407.0
+margin_bottom = 198.0
+window_title = "Open a File"
+mode = 0
+access = 2
+filters = PoolStringArray( "*.json" )
+current_dir = "/home/backwardspy/Projects/KitChips"
+current_path = "/home/backwardspy/Projects/KitChips/"
 
 [node name="WorldLoader" type="Node" parent="."]
 script = ExtResource( 1 )
@@ -163,3 +198,5 @@ material/0 = SubResource( 7 )
 mesh = SubResource( 8 )
 material/0 = SubResource( 9 )
 script = ExtResource( 17 )
+[connection signal="chips_file_selected" from="GUI" to="WorldLoader" method="load_craft"]
+[connection signal="pressed" from="GUI/Control/LoadButton" to="GUI" method="popup_open_file_dialog"]
