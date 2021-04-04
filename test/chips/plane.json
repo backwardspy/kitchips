@@ -50,7 +50,7 @@
             },
             {
                 "type": "chip",
-                "attached": "-z",
+                "attached": "-z"
             },
             {
                 "type": "chip",

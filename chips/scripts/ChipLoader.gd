@@ -12,6 +12,7 @@ enum ChipType {
     TRIM,
     WHEEL_HUB,
     JET,
+    WEIGHT,
 }
 
 var CHIP_TYPE_NAMES := {
@@ -22,6 +23,7 @@ var CHIP_TYPE_NAMES := {
     ChipType.TRIM: "Trim",
     ChipType.WHEEL_HUB: "Wheel Hub",
     ChipType.JET: "Jet",
+    ChipType.WEIGHT: "Weight",
 }
 
 var CHIP_SCENES := {
@@ -31,7 +33,8 @@ var CHIP_SCENES := {
     ChipType.RUDDER: preload("res://chips/Rudder.tscn"),
     ChipType.TRIM: preload("res://chips/Trim.tscn"),
     ChipType.WHEEL_HUB: preload("res://chips/WheelHub.tscn"),
-    ChipType.JET: preload("res://chips/Jet.tscn")
+    ChipType.JET: preload("res://chips/Jet.tscn"),
+    ChipType.WEIGHT: preload("res://chips/Weight.tscn"),
 }
 const WHEEL_SCENE := preload("res://chips/Wheel.tscn")
 
@@ -63,6 +66,7 @@ var CHIP_TYPE_JOINTS := {
     ChipType.TRIM: JointType.TRIM,
     ChipType.WHEEL_HUB: JointType.CHIP,
     ChipType.JET: JointType.CHIP,
+    ChipType.WEIGHT: JointType.CHIP,
 }
 
 var JOINT_TYPE_AXES := {
@@ -106,6 +110,7 @@ var CHIP_TYPE_STRING_TO_TYPE := {
     "trim": ChipType.TRIM,
     "wheel": ChipType.WHEEL_HUB,
     "jet": ChipType.JET,
+    "weight": ChipType.WEIGHT,
 }
 
 var ATTACHMENT_STRING_TO_ATTACHMENT := {
@@ -251,6 +256,7 @@ func attach_chip_tree(
 ) -> int:
     var chip_type: int = CHIP_TYPE_STRING_TO_TYPE[child_config["type"]]
     var attachment: int = ATTACHMENT_STRING_TO_ATTACHMENT[child_config["attached"]]
+    var option: int = child_config.get("option", 0)
     
     var angle_var := VarConfig.new(child_config.get("angle", 0.0), VarConversion.DEG2RAD)
     var power_var := VarConfig.new(child_config.get("power", 0.0))
@@ -260,6 +266,7 @@ func attach_chip_tree(
         chip_type,
         parent_body,
         attachment,
+        option,
         angle_var,
         power_var,
         id,
@@ -283,6 +290,7 @@ func attach(
     chip_type: int,
     parent: RigidBody,
     attachment: int,
+    option: int,
     angle_var: VarConfig,
     power_var: VarConfig,
     id: int,
@@ -334,6 +342,7 @@ func attach(
         ChipType.JET:
             if power_var.from_var:
                 craft.add_jet(power_var.var_name, chip, power_var.reverse)
+        ChipType.WEIGHT: chip.mass = 1 + clamp(option, 0, 8)
     
     return chip
     
