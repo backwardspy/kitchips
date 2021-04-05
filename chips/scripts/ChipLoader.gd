@@ -147,7 +147,7 @@ class VarConfig:
             var_name = ""
             reverse = false
         else:
-            push_error("invalid value type in VarConfig::_init(): %s" % value.get_class())
+            push_error("Invalid value type in VarConfig::_init(): %s" % value.get_class())
             
     func convert_value(value: float, conversion: int) -> float:
         match conversion:
@@ -164,12 +164,23 @@ class JointPlaceholder extends Spatial:
 func json_from_file(file_path: String) -> JSONParseResult:
     var file := File.new()
     if file.open(file_path, File.READ) != OK:
-        var error_string := "failed to open file: %s"
+        var error_string := "Failed to open file: %s"
         push_error(error_string % file_path)
         return null
     var content := file.get_as_text()
     file.close()
     return JSON.parse(content)
+    
+func try_load_lua_script(craft: Craft, file_path: String) -> void:
+    var name := file_path.replace(".json", "")
+    var script_path := "%s.lua" % name
+    var file := File.new()
+    if not file.file_exists(script_path):
+        print("No associated script found for %s" % file_path)
+        return
+        
+    craft.setup_lua_state(script_path)
+    
 
 func load_chips(file_path: String, temp_container: Node, spawn_position: Vector3) -> Craft:
     var json := json_from_file(file_path)
@@ -178,16 +189,18 @@ func load_chips(file_path: String, temp_container: Node, spawn_position: Vector3
         return null
     
     if json.error != OK:
-        var error_string := "(%d) error loading chips on line %d of %s: %s"
+        var error_string := "(%d) Error loading chips on line %d of %s: %s"
         push_error(error_string % [json.error, json.error_line, file_path, json.error_string])
         return null
         
     if typeof(json.result) != TYPE_DICTIONARY:
-        var error_string := "error loading chips from %s: expected dictionary at top level"
+        var error_string := "Error loading chips from %s: expected dictionary at top level"
         push_error(error_string % file_path)
         return null
         
-    return parse_chips(json.result, temp_container, spawn_position)
+    var craft := parse_chips(json.result, temp_container, spawn_position)
+    try_load_lua_script(craft, file_path)
+    return craft
 
 func parse_chips(chips: Dictionary, temp_container: Node, spawn_position: Vector3) -> Craft:
     var craft = Craft.new()
@@ -219,7 +232,7 @@ func parse_vars(craft: Craft, chips: Dictionary):
 func parse_body(craft: Craft, chips: Dictionary, temp_container: Node, spawn_position: Vector3):
     var root_chip: Dictionary = chips["body"]
     if root_chip["type"] != "core":
-        var error_string := 'expected root chip to be of type "core", instead got "%s"'
+        var error_string := 'Expected root chip to be of type "core", instead got "%s"'
         push_error(error_string % root_chip["type"])
         return null
 
@@ -352,7 +365,7 @@ func get_joint_axis(chip: RigidBody, joint_type: int) -> Vector3:
         JointType.RUDDER: return chip.transform.basis.y
         JointType.TRIM: return chip.transform.basis.z
         _:
-            push_error("unsupported joint type in get_joint_axis - defaulting to x axis")
+            push_error("Unsupported joint type in get_joint_axis - defaulting to x axis")
             return chip.transform.basis.x
     
 func make_joint(

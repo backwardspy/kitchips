@@ -5,7 +5,7 @@ class_name Craft
 class Motor:
     var body: RigidBody
     var reversed: bool
-    
+
 class Hinge:
     var joint: HingeJoint
     var reversed: bool
@@ -23,17 +23,21 @@ class Var:
     var gravity: float
     var positive_key: int
     var negative_key: int
-    
+
     var current_value: float
-    
+
     var motors: Array
     var hinges: Array
     var jets: Array
-    
+
+class CraftScript:
+    var lua_state: Lua
+
 var name: String
 var author: String
 var node: Node
 var core_body: RigidBody
+var craft_script: CraftScript
 var _vars: Array
 var _name_to_var: Dictionary
 
@@ -48,14 +52,14 @@ func add_motor(var_name: String, body: RigidBody, reverse: bool) -> void:
     motor.body = body
     motor.reversed = reverse
     v.motors.append(motor)
-    
+
 func add_hinge(var_name: String, joint: HingeJoint, reverse: bool) -> void:
     var v: Var = _name_to_var[var_name]
     var hinge := Hinge.new()
     hinge.joint = joint
     hinge.reversed = reverse
     v.hinges.append(hinge)
-    
+
 func add_jet(var_name: String, body: RigidBody, reverse: bool) -> void:
     var v := get_var(var_name)
     var jet := Jet.new()
@@ -65,6 +69,20 @@ func add_jet(var_name: String, body: RigidBody, reverse: bool) -> void:
 
 func vars() -> Array:
     return _vars
-    
+
 func get_var(var_name: String) -> Var:
     return _name_to_var[var_name]
+
+# --- lua bindings --- #
+
+# --- lua setup --- #
+
+func lua_error_callback(err: String) -> void:
+    push_error("Lua error: %s" % err)
+
+func setup_lua_state(script_path: String) -> void:
+    var lua := Lua.new()
+    lua.doFile(self, script_path, "lua_error_callback")
+    
+    craft_script = CraftScript.new()
+    craft_script.lua_state = lua

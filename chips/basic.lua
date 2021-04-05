@@ -1,0 +1,2 @@
+function update(delta)
+end

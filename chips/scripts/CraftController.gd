@@ -14,6 +14,9 @@ func _process(dt: float):
     if not craft:
         return
         
+    if craft.craft_script:
+        craft.craft_script.lua_state.callFunction(craft, "update", [dt])
+        
     for v in craft.vars():
         if held_keys.get(v.positive_key, false):
             increase_var(v, dt)
