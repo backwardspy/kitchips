@@ -1,5 +1,5 @@
-[gd_scene format=2]
+[gd_scene format=3 uid="uid://50kewnxpgmel"]
 
-[node name="ChipBase" type="RigidBody"]
+[node name="ChipBase" type="RigidBody3D"]
 collision_layer = 2
 can_sleep = false

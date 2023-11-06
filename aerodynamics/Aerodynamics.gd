@@ -4,7 +4,7 @@ class_name Aerodynamics
 const AIR_DENSITY := 0.2
 const WATER_DENSITY := 5.0
 
-static func calculate_lift_force(body: RigidBody, below_water: bool) -> Vector3:
+static func calculate_lift_force(body: RigidBody3D, below_water: bool) -> Vector3:
     var velocity: Vector3 = body.linear_velocity
     var direction := velocity.normalized()
     var normal: Vector3 = body.transform.basis.y

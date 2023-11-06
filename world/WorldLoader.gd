@@ -10,7 +10,7 @@ func _ready():
     load_craft("res://chips/basic.json")
     
 func _input(ev: InputEvent):
-    if ev is InputEventKey and ev.pressed and ev.scancode == KEY_U and last_loaded_path:
+    if ev is InputEventKey and ev.pressed and ev.keycode == KEY_U and last_loaded_path:
         load_craft(last_loaded_path)
 
 func load_craft(path: String):

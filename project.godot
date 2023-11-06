@@ -6,51 +6,28 @@
 ;   [section] ; section goes between []
 ;   param=value ; assign values to parameters
 
-config_version=4
-
-_global_script_classes=[ {
-"base": "Node",
-"class": "Aerodynamics",
-"language": "GDScript",
-"path": "res://aerodynamics/Aerodynamics.gd"
-}, {
-"base": "Object",
-"class": "ChipLoader",
-"language": "GDScript",
-"path": "res://chips/scripts/ChipLoader.gd"
-}, {
-"base": "Object",
-"class": "Constants",
-"language": "GDScript",
-"path": "res://world/Constants.gd"
-}, {
-"base": "Object",
-"class": "Craft",
-"language": "GDScript",
-"path": "res://chips/scripts/Craft.gd"
-} ]
-_global_script_class_icons={
-"Aerodynamics": "",
-"ChipLoader": "",
-"Constants": "",
-"Craft": ""
-}
+config_version=5
 
 [application]
 
 config/name="KitChips"
 run/main_scene="res://World.tscn"
+config/features=PackedStringArray("4.1")
 config/icon="res://icon.png"
 
 [autoload]
 
 CraftController="*res://chips/scripts/CraftController.gd"
 
+[dotnet]
+
+project/assembly_name="KitChips"
+
 [physics]
 
+3d/solver/solver_iterations=128
 common/physics_fps=240
 
 [rendering]
 
 quality/filters/msaa=3
-environment/default_environment="res://default_env.tres"

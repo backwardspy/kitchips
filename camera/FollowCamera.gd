@@ -1,8 +1,8 @@
 extends "res://camera/BaseCamera.gd"
 
-export(float) var height: float = 5
-export(float) var distance: float = 15
-export(float) var look_height_offset: float = 3
+@export var height: float = 5
+@export var distance: float = 15
+@export var look_height_offset: float = 3
 
 func _process(_dt: float):
     if not target:
@@ -16,7 +16,7 @@ func _process(_dt: float):
     
     var v := tgt2d - me2d
     if v.length_squared() > distance * distance:
-        v = v.clamped(distance)
+        v = v.limit_length(distance)
         me2d = tgt2d - v
         
     transform.origin = Vector3(me2d.x, tgt.y + height, me2d.y)

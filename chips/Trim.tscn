@@ -1,14 +1,14 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=4 format=3 uid="uid://dovnpiakwm07j"]
 
-[ext_resource path="res://chips/models/trim/trim.dae" type="PackedScene" id=1]
-[ext_resource path="res://chips/ChipBase.tscn" type="PackedScene" id=2]
+[ext_resource type="PackedScene" uid="uid://djj31x5t6kwe8" path="res://chips/models/trim/trim.dae" id="1"]
+[ext_resource type="PackedScene" uid="uid://50kewnxpgmel" path="res://chips/ChipBase.tscn" id="2"]
 
-[sub_resource type="BoxShape" id=1]
-extents = Vector3( 1, 0.1, 1 )
+[sub_resource type="BoxShape3D" id="1"]
+size = Vector3(2, 0.2, 2)
 
-[node name="Trim" instance=ExtResource( 2 )]
+[node name="Trim" instance=ExtResource("2")]
 
-[node name="Model" parent="." index="0" instance=ExtResource( 1 )]
+[node name="Model" parent="." index="0" instance=ExtResource("1")]
 
-[node name="Shape" type="CollisionShape" parent="." index="1"]
-shape = SubResource( 1 )
+[node name="Shape3D" type="CollisionShape3D" parent="." index="1"]
+shape = SubResource("1")

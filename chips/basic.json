@@ -8,7 +8,7 @@
             "name": "engine",
             "default": 0,
             "min": -40,
-            "max": 80,
+            "max": 40,
             "step": 40,
             "gravity": 100,
             "+key": "up",

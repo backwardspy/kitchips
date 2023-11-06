@@ -1,17 +1,10 @@
-[gd_resource type="Environment" load_steps=2 format=2]
+[gd_resource type="Environment" load_steps=3 format=3 uid="uid://bejes3raswk56"]
 
-[sub_resource type="ProceduralSky" id=1]
-sky_top_color = Color( 0.709804, 0.835294, 0.905882, 1 )
-sky_horizon_color = Color( 0.427451, 0.745098, 0.917647, 1 )
-ground_bottom_color = Color( 0.427451, 0.745098, 0.917647, 1 )
-ground_horizon_color = Color( 0.427451, 0.745098, 0.917647, 1 )
-sun_latitude = 29.0
-sun_longitude = -149.0
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_tdttk"]
+
+[sub_resource type="Sky" id="1"]
+sky_material = SubResource("ProceduralSkyMaterial_tdttk")
 
 [resource]
 background_mode = 2
-background_sky = SubResource( 1 )
-fog_enabled = true
-fog_color = Color( 0.427451, 0.745098, 0.917647, 1 )
-fog_depth_begin = 500.0
-fog_depth_end = 1500.0
+sky = SubResource("1")

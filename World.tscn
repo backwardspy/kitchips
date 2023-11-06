@@ -1,202 +1,183 @@
-[gd_scene load_steps=29 format=2]
+[gd_scene load_steps=30 format=3 uid="uid://8qu0cv7cs2u8"]
 
-[ext_resource path="res://world/WorldLoader.gd" type="Script" id=1]
-[ext_resource path="res://debug/DebugDude.gd" type="Script" id=2]
-[ext_resource path="res://terrain/textures/ground013/Ground013_1K_Color.jpg" type="Texture" id=3]
-[ext_resource path="res://terrain/textures/ground013/Ground013_1K_AmbientOcclusion.jpg" type="Texture" id=4]
-[ext_resource path="res://terrain/textures/ground013/Ground013_1K_Normal.jpg" type="Texture" id=5]
-[ext_resource path="res://terrain/textures/ground013/Ground013_1K_Roughness.jpg" type="Texture" id=6]
-[ext_resource path="res://camera/FollowCamera.gd" type="Script" id=7]
-[ext_resource path="res://debug/JointVisualiser.gd" type="Script" id=8]
-[ext_resource path="res://debug/AerodynamicsVisualiser.gd" type="Script" id=9]
-[ext_resource path="res://terrain/carrier/carrier.dae" type="PackedScene" id=10]
-[ext_resource path="res://terrain/textures/Water_001_SD/Water_001_OCC.jpg" type="Texture" id=11]
-[ext_resource path="res://terrain/textures/Water_001_SD/Water_001_DISP.png" type="Texture" id=12]
-[ext_resource path="res://terrain/textures/Water_001_SD/Water_001_NORM.jpg" type="Texture" id=13]
-[ext_resource path="res://terrain/textures/Water_001_SD/Water_001_COLOR.jpg" type="Texture" id=14]
-[ext_resource path="res://terrain/textures/Water_001_SD/Water_001_SPEC.jpg" type="Texture" id=15]
-[ext_resource path="res://environment/above_water.tres" type="Environment" id=16]
-[ext_resource path="res://terrain/Water.gd" type="Script" id=17]
-[ext_resource path="res://World.gd" type="Script" id=18]
-[ext_resource path="res://gui/GUI.gd" type="Script" id=19]
+[ext_resource type="Script" path="res://world/WorldLoader.gd" id="1"]
+[ext_resource type="Script" path="res://debug/DebugDude.gd" id="2"]
+[ext_resource type="Texture2D" uid="uid://bb2xqkbifufdu" path="res://terrain/textures/ground013/Ground013_1K_Color.jpg" id="3"]
+[ext_resource type="Texture2D" uid="uid://bvtgeff06os7p" path="res://terrain/textures/ground013/Ground013_1K_AmbientOcclusion.jpg" id="4"]
+[ext_resource type="Texture2D" uid="uid://bjw56qsgvhb7j" path="res://terrain/textures/ground013/Ground013_1K_Normal.jpg" id="5"]
+[ext_resource type="Texture2D" uid="uid://yp6013jpkx62" path="res://terrain/textures/ground013/Ground013_1K_Roughness.jpg" id="6"]
+[ext_resource type="Script" path="res://camera/FollowCamera.gd" id="7"]
+[ext_resource type="Script" path="res://debug/JointVisualiser.gd" id="8"]
+[ext_resource type="Script" path="res://debug/AerodynamicsVisualiser.gd" id="9"]
+[ext_resource type="PackedScene" uid="uid://ceeucgicf4re4" path="res://terrain/carrier/carrier.dae" id="10"]
+[ext_resource type="Texture2D" uid="uid://dyvf5t74f4sdx" path="res://terrain/textures/Water_001_SD/Water_001_OCC.jpg" id="11"]
+[ext_resource type="Texture2D" uid="uid://dv2nwshsukg0" path="res://terrain/textures/Water_001_SD/Water_001_DISP.png" id="12"]
+[ext_resource type="Texture2D" uid="uid://t1kp7mhqxco7" path="res://terrain/textures/ground013/Ground013_1K_Displacement.jpg" id="12_0k61o"]
+[ext_resource type="Texture2D" uid="uid://b1sn7anup5kon" path="res://terrain/textures/Water_001_SD/Water_001_NORM.jpg" id="13"]
+[ext_resource type="Texture2D" uid="uid://dpgokhlupbt6b" path="res://terrain/textures/Water_001_SD/Water_001_COLOR.jpg" id="14"]
+[ext_resource type="Texture2D" uid="uid://bmo17c3heysnr" path="res://terrain/textures/Water_001_SD/Water_001_SPEC.jpg" id="15"]
+[ext_resource type="Environment" uid="uid://bejes3raswk56" path="res://environment/above_water.tres" id="16"]
+[ext_resource type="Script" path="res://terrain/Water.gd" id="17"]
+[ext_resource type="Script" path="res://World.gd" id="18"]
+[ext_resource type="Script" path="res://gui/GUI.gd" id="19"]
 
-[sub_resource type="SpatialMaterial" id=1]
-flags_unshaded = true
-flags_no_depth_test = true
-flags_do_not_receive_shadows = true
+[sub_resource type="StandardMaterial3D" id="1"]
+no_depth_test = true
+shading_mode = 0
 vertex_color_use_as_albedo = true
+disable_receive_shadows = true
 
-[sub_resource type="BoxShape" id=2]
-extents = Vector3( 3.26289, 1, 11.9093 )
+[sub_resource type="BoxShape3D" id="2"]
+size = Vector3(3.26289, 1, 11.9093)
 
-[sub_resource type="BoxShape" id=3]
-extents = Vector3( 2.09775, 0.247877, 1.65651 )
+[sub_resource type="BoxShape3D" id="3"]
+size = Vector3(2.09775, 0.247877, 1.65651)
 
-[sub_resource type="BoxShape" id=4]
-extents = Vector3( 1, 1, 1.65945 )
+[sub_resource type="BoxShape3D" id="4"]
+size = Vector3(1, 1, 1.65945)
 
-[sub_resource type="BoxShape" id=5]
-extents = Vector3( 1000, 1, 1000 )
+[sub_resource type="BoxShape3D" id="5"]
+size = Vector3(2000, 2, 2000)
 
-[sub_resource type="CubeMesh" id=6]
-size = Vector3( 2000, 2, 2000 )
-
-[sub_resource type="SpatialMaterial" id=7]
-albedo_texture = ExtResource( 3 )
-roughness_texture = ExtResource( 6 )
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_puddt"]
+albedo_texture = ExtResource("3")
+metallic_specular = 0.1
+roughness_texture = ExtResource("6")
 normal_enabled = true
-normal_scale = 1.0
-normal_texture = ExtResource( 5 )
+normal_texture = ExtResource("5")
 ao_enabled = true
-ao_light_affect = 0.0
-ao_texture = ExtResource( 4 )
-ao_on_uv2 = false
-ao_texture_channel = 0
-uv1_scale = Vector3( 250, 250, 250 )
+ao_texture = ExtResource("4")
+heightmap_enabled = true
+heightmap_texture = ExtResource("12_0k61o")
+uv1_scale = Vector3(100, 100, 100)
 
-[sub_resource type="PlaneMesh" id=8]
-size = Vector2( 10000, 10000 )
+[sub_resource type="BoxMesh" id="6"]
+material = SubResource("StandardMaterial3D_puddt")
+size = Vector3(2000, 2, 2000)
 
-[sub_resource type="SpatialMaterial" id=9]
-flags_transparent = true
-params_cull_mode = 2
-albedo_color = Color( 1, 1, 1, 0.470588 )
-albedo_texture = ExtResource( 14 )
-metallic_texture = ExtResource( 15 )
+[sub_resource type="PlaneMesh" id="8"]
+size = Vector2(10000, 10000)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_vs68r"]
+transparency = 1
+albedo_color = Color(1, 1, 1, 0.392157)
+albedo_texture = ExtResource("14")
+metallic_specular = 1.0
+metallic_texture = ExtResource("15")
+roughness = 0.0
+roughness_texture = ExtResource("15")
 normal_enabled = true
-normal_scale = 1.0
-normal_texture = ExtResource( 13 )
+normal_texture = ExtResource("13")
 ao_enabled = true
-ao_light_affect = 0.0
-ao_texture = ExtResource( 11 )
-ao_on_uv2 = false
-ao_texture_channel = 0
-depth_enabled = true
-depth_scale = -0.05
-depth_deep_parallax = false
-depth_flip_tangent = false
-depth_flip_binormal = false
-depth_texture = ExtResource( 12 )
-uv1_scale = Vector3( 100, 100, 100 )
+ao_texture = ExtResource("11")
+heightmap_enabled = true
+heightmap_texture = ExtResource("12")
+uv1_scale = Vector3(100, 100, 100)
 
-[node name="World" type="Spatial"]
-script = ExtResource( 18 )
+[node name="World" type="Node3D"]
+script = ExtResource("18")
 
 [node name="GUI" type="CanvasLayer" parent="."]
-script = ExtResource( 19 )
+script = ExtResource("19")
 
 [node name="Control" type="Control" parent="GUI"]
+layout_mode = 3
+anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-__meta__ = {
-"_edit_use_anchors_": false
-}
+grow_horizontal = 2
+grow_vertical = 2
 
 [node name="LoadButton" type="Button" parent="GUI/Control"]
-margin_right = 12.0
-margin_bottom = 20.0
+layout_mode = 0
+offset_right = 12.0
+offset_bottom = 20.0
 text = "Load"
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="OpenFileDialog" type="FileDialog" parent="GUI/Control"]
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-margin_left = -406.0
-margin_top = -198.0
-margin_right = 407.0
-margin_bottom = 198.0
-window_title = "Open a File"
-mode = 0
 access = 2
-filters = PoolStringArray( "*.json" )
-current_dir = "/home/backwardspy/Projects/KitChips"
-current_path = "/home/backwardspy/Projects/KitChips/"
+filters = PackedStringArray("*.json")
+show_hidden_files = true
 
 [node name="WorldLoader" type="Node" parent="."]
-script = ExtResource( 1 )
+script = ExtResource("1")
 
-[node name="SpawnPoint" type="Position3D" parent="WorldLoader"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 17.8583, 0 )
+[node name="SpawnPoint" type="Marker3D" parent="WorldLoader"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 17.8583, 0)
 
 [node name="DebugDude" type="Node" parent="."]
-script = ExtResource( 2 )
+script = ExtResource("2")
 
 [node name="UI" type="CanvasLayer" parent="DebugDude"]
 
 [node name="CraftVars" type="Label" parent="DebugDude/UI"]
+anchors_preset = 3
 anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-margin_left = -72.1758
-margin_top = -24.1758
-margin_right = -8.17578
-margin_bottom = -8.17578
+offset_left = -72.1758
+offset_top = -24.1758
+offset_right = -8.17578
+offset_bottom = -8.17578
 grow_horizontal = 0
 grow_vertical = 0
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
-[node name="JointVisualiser" type="ImmediateGeometry" parent="."]
+[node name="JointVisualiser" type="MeshInstance3D" parent="."]
 visible = false
-material_override = SubResource( 1 )
-script = ExtResource( 8 )
+material_override = SubResource("1")
+script = ExtResource("8")
 
-[node name="AerodynamicsVisualiser" type="ImmediateGeometry" parent="."]
+[node name="AerodynamicsVisualiser" type="MeshInstance3D" parent="."]
 visible = false
-material_override = SubResource( 1 )
-script = ExtResource( 9 )
+material_override = SubResource("1")
+script = ExtResource("9")
 
-[node name="Camera" type="Camera" parent="."]
-transform = Transform( 0.944926, -0.0695627, 0.319807, 0, 0.977151, 0.212545, -0.327285, -0.200839, 0.923335, 4.1655, 47.455, 9.75323 )
-environment = ExtResource( 16 )
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(0.944926, -0.0695627, 0.319807, 0, 0.977151, 0.212545, -0.327285, -0.200839, 0.923335, 4.1655, 47.455, 9.75323)
+environment = ExtResource("16")
 current = true
 far = 2000.0
-script = ExtResource( 7 )
+script = ExtResource("7")
 
-[node name="Sun" type="DirectionalLight" parent="."]
-transform = Transform( 0.791735, 0.418692, -0.444807, -0.182217, 0.856881, 0.482236, 0.583055, -0.300752, 0.754715, 0, 17.9208, 0 )
-light_color = Color( 1, 0.980392, 0.913725, 1 )
+[node name="Sun" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.791735, 0.418692, -0.444807, -0.182217, 0.856881, 0.482236, 0.583055, -0.300752, 0.754715, 0, 17.9208, 0)
+light_color = Color(1, 0.980392, 0.913725, 1)
 shadow_enabled = true
 
-[node name="Boat" type="StaticBody" parent="."]
-transform = Transform( 10, 0, 0, 0, 10, 0, 0, 0, 10, -131.199, 22.7119, 0 )
+[node name="Boat" type="StaticBody3D" parent="."]
+transform = Transform3D(10, 0, 0, 0, 10, 0, 0, 0, 10, -131.199, 22.7119, 0)
 
-[node name="CollisionShape" type="CollisionShape" parent="Boat"]
-shape = SubResource( 2 )
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Boat"]
+shape = SubResource("2")
 
-[node name="CollisionShape2" type="CollisionShape" parent="Boat"]
-transform = Transform( 1, 0, 0, 0, 0.948207, 0.317652, 0, -0.317652, 0.948207, 0.823247, 1.31122, 10.2722 )
-shape = SubResource( 3 )
+[node name="CollisionShape2" type="CollisionShape3D" parent="Boat"]
+transform = Transform3D(1, 0, 0, 0, 0.948207, 0.317652, 0, -0.317652, 0.948207, 0.823247, 1.31122, 10.2722)
+shape = SubResource("3")
 
-[node name="CollisionShape3" type="CollisionShape" parent="Boat"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -2.43775, 1.47014, 2.20919 )
-shape = SubResource( 4 )
+[node name="CollisionShape3" type="CollisionShape3D" parent="Boat"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.43775, 1.47014, 2.20919)
+shape = SubResource("4")
 
-[node name="CollisionShape4" type="CollisionShape" parent="Boat"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -2.42616, 1.39916, -3.0022 )
-shape = SubResource( 4 )
+[node name="CollisionShape4" type="CollisionShape3D" parent="Boat"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.42616, 1.39916, -3.0022)
+shape = SubResource("4")
 
-[node name="carrier" parent="Boat" instance=ExtResource( 10 )]
+[node name="carrier" parent="Boat" instance=ExtResource("10")]
 
-[node name="Terrain" type="StaticBody" parent="."]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 12.8583, 0 )
+[node name="Terrain" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 12.8583, 0)
 
-[node name="CollisionShape" type="CollisionShape" parent="Terrain"]
-shape = SubResource( 5 )
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Terrain"]
+shape = SubResource("5")
 
-[node name="MeshInstance" type="MeshInstance" parent="Terrain"]
-mesh = SubResource( 6 )
-material/0 = SubResource( 7 )
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Terrain"]
+mesh = SubResource("6")
 
-[node name="Water" type="MeshInstance" parent="."]
-mesh = SubResource( 8 )
-material/0 = SubResource( 9 )
-script = ExtResource( 17 )
+[node name="Water" type="MeshInstance3D" parent="."]
+mesh = SubResource("8")
+surface_material_override/0 = SubResource("StandardMaterial3D_vs68r")
+script = ExtResource("17")
+
 [connection signal="chips_file_selected" from="GUI" to="WorldLoader" method="load_craft"]
 [connection signal="pressed" from="GUI/Control/LoadButton" to="GUI" method="popup_open_file_dialog"]

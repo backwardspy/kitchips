@@ -3,7 +3,7 @@ extends CanvasLayer
 signal chips_file_selected
 
 func _ready() -> void:
-    var err := $Control/OpenFileDialog.connect("file_selected", self, "file_selected")
+    var err := $Control/OpenFileDialog.connect("file_selected", Callable(self, "file_selected"))
     if err != OK:
         push_error("Failed to connect OpenFileDialog.file_selected to self.file_selected")
 
